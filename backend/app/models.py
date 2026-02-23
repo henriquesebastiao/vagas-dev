@@ -10,6 +10,7 @@ class JobSource(str, Enum):
     linkedin = 'linkedin'
     gupy = 'gupy'
 
+
 class WorkplaceType(str, Enum):
     remote = 'remote'
     hybrid = 'hybrid'
@@ -38,7 +39,9 @@ class Job:
     published_at: Mapped[datetime | None] = mapped_column(
         DateTime, nullable=True
     )
-    end_applications: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    end_applications: Mapped[datetime | None] = mapped_column(
+        DateTime, nullable=True
+    )
     found_at: Mapped[datetime] = mapped_column(
         init=False,
         server_default=func.now(tz=utc),
