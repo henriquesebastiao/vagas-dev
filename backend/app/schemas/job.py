@@ -1,16 +1,20 @@
-from pydantic import BaseModel
 from datetime import datetime
+
+from pydantic import BaseModel
+
+from app.models import JobSource, WorkplaceType
+
 
 class JobOut(BaseModel):
     id: int
     external_id: str
-    source: str
+    source: JobSource
     title: str
     company: str
     location: str | None
     url: str
-    workplace_type: str | None
+    description: str | None
+    workplace_type: WorkplaceType | None
     published_at: datetime | None
+    end_applications: datetime | None
     found_at: datetime
-
-    model_config = {"from_attributes": True}

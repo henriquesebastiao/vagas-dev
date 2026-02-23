@@ -10,6 +10,9 @@ dependencies = [
     "beautifulsoup4>=4.14.3",
     "fastapi[standard]>=0.129.0",
     "httpx>=0.28.1",
+    "psycopg[binary]>=3.3.3",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.13.1",
     "pytz>=2025.2",
     "sqlalchemy>=2.0.46",
 ]
