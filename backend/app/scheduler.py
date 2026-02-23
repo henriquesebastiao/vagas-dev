@@ -2,9 +2,9 @@ import logging
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-from scrapers.gupy import GupyScraper
 
 from app.core.database import get_session
+from app.scrapers.gupy import GupyScraper
 
 logger = logging.getLogger(__name__)
 scheduler = AsyncIOScheduler()
