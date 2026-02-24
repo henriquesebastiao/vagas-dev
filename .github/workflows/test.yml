@@ -32,9 +32,9 @@ jobs:
 
       - name: Run radon
         run: uv run radon cc ./backend -a -na
-#
-#      - name: Run tests
-#        run: |
-#          UV_PATH=$(which uv)
-#          echo "Using uv at: $UV_PATH"
-#          sudo "$UV_PATH" run pytest -s -x --cov=backend/app -v
+
+      - name: Run tests
+        run: |
+          UV_PATH=$(which uv)
+          echo "Using uv at: $UV_PATH"
+          sudo "$UV_PATH" run pytest -s -x --cov=backend/app -v
