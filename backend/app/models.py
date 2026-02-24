@@ -46,6 +46,9 @@ class Job:
         init=False,
         server_default=func.now(tz=utc),
     )
+    notified: Mapped[bool] = mapped_column(
+        init=False, default=False, server_default='false'
+    )
 
     __table_args__ = (
         UniqueConstraint('external_id', 'source', name='uq_job_source'),
