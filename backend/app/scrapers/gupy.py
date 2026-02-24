@@ -1,4 +1,4 @@
-import httpx
+from httpx import AsyncClient
 
 from app.scrapers.base import BaseJobScraper
 
@@ -36,7 +36,7 @@ class GupyScraper(BaseJobScraper):
         """
         all_jobs = []
 
-        async with httpx.AsyncClient(timeout=30) as client:
+        async with AsyncClient(timeout=30) as client:
             for keyword in self.keywords:
                 offset = 0
                 while True:
@@ -54,6 +54,8 @@ class GupyScraper(BaseJobScraper):
                         break
 
                     for job in jobs:
+                        # marca a vaga com o keyword que a encontrou
+                        job['keyword'] = keyword
                         all_jobs.append(self._parse(job))
 
                     # Paginação
@@ -86,6 +88,7 @@ class GupyScraper(BaseJobScraper):
 
         return {
             'external_id': str(raw['id']),
+            'keyword': raw.get('keyword', ''),
             'title': raw.get('name', ''),
             'company': raw.get('careerPageName', ''),
             'location': location,

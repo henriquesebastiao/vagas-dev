@@ -25,6 +25,9 @@ class Job:
     __tablename__ = 'jobs'
     id: Mapped[int] = mapped_column(primary_key=True, init=False)
     external_id: Mapped[str] = mapped_column(String(255))
+    keyword: Mapped[str | None] = mapped_column(
+        String(255), server_default=None
+    )
     source: Mapped[JobSource] = mapped_column(
         String(50)
     )  # "gupy", "linkedin", etc.

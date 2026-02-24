@@ -11,6 +11,7 @@ class JobOut(BaseModel):
     Attributes:
         id: ID da vaga no banco de dados
         external_id: ID da vaga no site de origem
+        keyword: Keyword que resultou na vaga (e.g. "python", "backend")
         source: Fonte da vaga (e.g. "gupy", "linkedin")
         title: Título da vaga
         company: Empresa contratante
@@ -29,6 +30,7 @@ class JobOut(BaseModel):
 
     id: int
     external_id: str
+    keyword: str
     source: JobSource
     title: str
     company: str
