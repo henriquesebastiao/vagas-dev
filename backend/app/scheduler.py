@@ -6,12 +6,14 @@ from apscheduler.triggers.interval import IntervalTrigger
 from sqlalchemy import select
 
 from app.core.database import AsyncSessionLocal
+from app.core.settings import get_settings
 from app.models import Job
 from app.notifiers import notify_new_jobs
 from app.scrapers.gupy import GupyScraper
 
 logger = logging.getLogger(__name__)
 scheduler = AsyncIOScheduler()
+settings = get_settings()
 
 
 async def run_gupy_sync():
@@ -49,7 +51,7 @@ def setup_scheduler():
     # Roda a cada 30 minutos
     scheduler.add_job(
         run_gupy_sync,
-        trigger=IntervalTrigger(minutes=30),
+        trigger=IntervalTrigger(minutes=settings.INTERVAL_SYNC),
         id='gupy_sync',
         name='Gupy Job Sync',
         replace_existing=True,
@@ -59,7 +61,7 @@ def setup_scheduler():
 
     scheduler.add_job(
         run_notify_new_jobs,
-        trigger=IntervalTrigger(minutes=30),
+        trigger=IntervalTrigger(minutes=settings.INTERVAL_SYNC),
         id='notify_new_jobs',
         name='Notifica sobre novas vagas',
         replace_existing=True,
