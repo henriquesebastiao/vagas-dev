@@ -4,14 +4,36 @@ from app.scrapers.base import BaseJobScraper
 
 
 class GupyScraper(BaseJobScraper):
+    """
+    Scraper para a API pública de vagas da Gupy.
+
+    Busca vagas por lista de palavras-chave, lidando com paginação
+    automaticamente. Vagas que aparecem em múltiplos keywords são
+    deduplicadas antes de serem enviadas para persistência.
+    """
+
     source_name = 'gupy'
     BASE_URL = 'https://portal.api.gupy.io/api/v1/jobs'
 
-    def __init__(self, keywords: list[str] = None, limit: int = 100):
+    def __init__(self, keywords: list[str] = None, limit: int = 1000):
+        """Monta o scraper com os parâmetros de busca.
+
+        Args:
+            keywords (list): termos de busca.
+                Cada keyword gera uma sequência independente de requests.
+            limit (int): vagas por página — use o máximo permitido pela API
+                para minimizar requests.
+        """
         self.keywords = keywords or ['python', 'backend']
         self.limit = limit
 
     async def fetch_jobs(self) -> list[dict]:
+        """Coleta todas as vagas para cada keyword configurado.
+
+        Itera os keywords sequencialmente para não sobrecarregar a API.
+        Ao final, deduplicadas por `external_id` antes de retornar,
+        pois a mesma vaga pode aparecer em buscas por keywords diferentes.
+        """
         all_jobs = []
 
         async with httpx.AsyncClient(timeout=30) as client:
@@ -23,9 +45,9 @@ class GupyScraper(BaseJobScraper):
                         'limit': self.limit,
                         'offset': offset,
                     }
-                    resp = await client.get(self.BASE_URL, params=params)
-                    resp.raise_for_status()
-                    data = resp.json()
+                    response = await client.get(self.BASE_URL, params=params)
+                    response.raise_for_status()
+                    data = response.json()
 
                     jobs = data.get('data', [])
                     if not jobs:
@@ -47,6 +69,12 @@ class GupyScraper(BaseJobScraper):
 
     @staticmethod
     def _parse(raw: dict) -> dict:
+        """Normaliza o payload bruto da API para o formato interno do model.
+
+        Isola o acoplamento com o contrato da API da Gupy neste único método:
+        se a API mudar campos, só aqui precisa ser atualizado.
+        """
+
         city = raw.get('city')
         state = raw.get('state')
 
