@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     INTERVAL_SYNC: int = 60  # intervalo em minutos para busca de novas vagas
 
     # Telegram
-    TELEGRAM_BOT_TOKEN: str
+    TELEGRAM_BOT_TOKEN: str = ''
 
 
 @lru_cache
