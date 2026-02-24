@@ -44,11 +44,15 @@ select = [
     'W',  # pycodestyle warnings
     'PL', # pylint
     'PT', # flake8-pytest-style
+    'FAST', # fastapi-specific rules
 ]
 
 [tool.ruff.format]
 preview = true
 quote-style = 'single'
+
+[tool.ruff.lint.per-file-ignores]
+'**/routes/*.py' = ['PLR0917', 'PLR0913']
 
 [tool.pytest.ini_options]
 addopts = '-p no:warnings'
@@ -67,6 +71,5 @@ show_contexts = true
 [tool.taskipy.tasks]
 lint = 'uv run ruff check .; uv run ruff check . --diff; uv run radon cc ./backend -a -na'
 format = 'ruff format .; ruff check . --fix'
-radon = 'radon cc ./backend -a -na'
 run = 'uv run fastapi dev backend/app/main.py'
 test = 'pytest -s -x --cov=backend/app -v'

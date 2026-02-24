@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
     scheduler.shutdown(wait=False)
 
 
-app = FastAPI(title='Job Tracker API', lifespan=lifespan)
+app = FastAPI(title='Vagas DEV - API', lifespan=lifespan)
 app.include_router(job.router)
 
 

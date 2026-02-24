@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str
 
+    # App
+    INTERVAL_SYNC: int = 60  # intervalo em minutos para busca de novas vagas
+
 
 @lru_cache
 def get_settings():
