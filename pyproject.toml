@@ -73,4 +73,4 @@ show_contexts = true
 lint = 'uv run ruff check .; uv run ruff check . --diff; uv run radon cc ./backend -a -na'
 format = 'ruff format .; ruff check . --fix'
 run = 'uv run fastapi dev backend/app/main.py'
-test = 'pytest -s -x --cov=backend/app -v'
+test = 'pytest -s -x --cov=backend/app -v; coverage html'
