@@ -7,6 +7,26 @@ async def test_list_jobs(client):
     assert isinstance(response.json(), list)
 
 
+async def test_list_jobs_with_source_return_200(client):
+    response = await client.get('/jobs/?source=gupy')
+    assert response.status_code == status.HTTP_200_OK
+
+
+async def test_list_jobs_with_keyword_return_200(client):
+    response = await client.get('/jobs/?keyword=python')
+    assert response.status_code == status.HTTP_200_OK
+
+
+async def test_list_jobs_with_location_return_200(client):
+    response = await client.get('/jobs/?location=Brasil')
+    assert response.status_code == status.HTTP_200_OK
+
+
+async def test_list_jobs_with_workplace_type_return_200(client):
+    response = await client.get('/jobs/?workplace_type=remote')
+    assert response.status_code == status.HTTP_200_OK
+
+
 async def test_list_sources(client):
     response = await client.get('/jobs/sources')
     assert response.status_code == status.HTTP_200_OK
