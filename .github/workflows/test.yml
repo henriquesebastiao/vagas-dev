@@ -1,0 +1,40 @@
+on: [push, pull_request]
+
+name: Test
+
+jobs:
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    env:
+      UV_SYSTEM_PYTHON: 1
+      PYTHON_COLORS: 0
+
+    steps:
+      - name: Copy files from repo
+        uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: 3.14
+          enable-cache: true
+          cache-dependency-glob: |
+            **/pyproject.toml
+            **/uv.lock
+
+      - name: Install dependencies
+        run: uv sync --all-extras --dev
+
+      - name: Run Ruff
+        run: uv run ruff check .; uv run ruff check . --diff
+
+      - name: Run radon
+        run: uv run radon cc ./backend -a -na
+#
+#      - name: Run tests
+#        run: |
+#          UV_PATH=$(which uv)
+#          echo "Using uv at: $UV_PATH"
+#          sudo "$UV_PATH" run pytest -s -x --cov=backend/app -v
