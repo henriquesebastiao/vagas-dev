@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     )
 
     # Database
-    DATABASE_URL: str = 'postgresql+asyncpg://user:password@localhost:5432/db'
+    DATABASE_URL: str = 'postgresql+psycopg://user:password@localhost:5432/db'
 
     # App
     INTERVAL_SYNC: int = 60  # intervalo em minutos para busca de novas vagas
