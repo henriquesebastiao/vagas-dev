@@ -21,9 +21,9 @@ class GupyScraper(BaseJobScraper):
 
         Args:
             keywords (list): termos de busca.
-                Cada keyword gera uma sequência independente de requests.
+                Cada keyword gera uma sequência independente de requests
             limit (int): vagas por página — use o máximo permitido pela API
-                para minimizar requests.
+                para minimizar requests
         """
         self.keywords = keywords or KEYWORDS
         self.limit = limit
