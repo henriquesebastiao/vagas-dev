@@ -14,9 +14,9 @@ class GupyScraper(BaseJobScraper):
     """
 
     source_name = 'gupy'
-    BASE_URL = 'https://portal.api.gupy.io/api/v1/jobs'
+    BASE_URL = 'https://employability-portal.gupy.io/api/v1/jobs'
 
-    def __init__(self, keywords: list[str] = None, limit: int = 1000):
+    def __init__(self, keywords: list[str] = None, limit: int = 100):
         """Monta o scraper com os parâmetros de busca.
 
         Args:
@@ -45,6 +45,10 @@ class GupyScraper(BaseJobScraper):
                         'jobName': keyword,
                         'limit': self.limit,
                         'offset': offset,
+                        # Ordenar por data de publicação para pegar as vagas mais recentes primeiro
+                        'sortBy': 'publishedDate',
+                        # Ordenar decrescente para garantir que as vagas mais recentes venham primeiro
+                        'sortOrder': 'desc',
                     }
                     response = await client.get(self.BASE_URL, params=params)
                     response.raise_for_status()
