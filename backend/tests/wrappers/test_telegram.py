@@ -7,6 +7,10 @@ async def test_telegram_send_message(bot_telegram):
     response = await bot_telegram.send_message(
         chat_id=chat_id, text='Mensagem de teste'
     )
+
+    if response.status_code != HTTPStatus.OK:
+        print('Response content:', response.content)
+
     assert response.status_code == HTTPStatus.OK
     assert response.json()['ok']
 
