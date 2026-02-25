@@ -17,6 +17,11 @@ class Settings(BaseSettings):
     # Telegram
     TELEGRAM_BOT_TOKEN: str = ''
     TELEGRAM_CHAT_ID: str = ''
+    TELEGRAM_PYTHON_TOPIC_ID: str = '3'
+    TELEGRAM_JAVA_TOPIC_ID: str = '5'
+    TELEGRAM_GOLANG_TOPIC_ID: str = '6'
+    TELEGRAM_FRONTEND_TOPIC_ID: str = '8'
+    TELEGRAM_BACKEND_TOPIC_ID: str = '7'
 
 
 @lru_cache

@@ -19,6 +19,12 @@ from testcontainers.postgres import PostgresContainer
 def load_env():
     load_dotenv()
 
+    os.putenv('TELEGRAM_PYTHON_TOPIC_ID', '3')
+    os.putenv('TELEGRAM_JAVA_TOPIC_ID', '4')
+    os.putenv('TELEGRAM_GOLANG_TOPIC_ID', '5')
+    os.putenv('TELEGRAM_FRONTEND_TOPIC_ID', '6')
+    os.putenv('TELEGRAM_BACKEND_TOPIC_ID', '7')
+
 
 @pytest.fixture
 def bot_telegram():
