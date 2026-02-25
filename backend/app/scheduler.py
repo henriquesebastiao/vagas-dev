@@ -32,26 +32,32 @@ async def run_notify_new_jobs():
     logger.info('Iniciando notificação de novas vagas...')
 
     async with AsyncSessionLocal() as session:
+        # Obtém as vagas que ainda não foram notificadas para os canais
         jobs = await session.scalars(select(Job).where(Job.notified == False))
         jobs = jobs.all()
 
+        list_jobs = []
+
         for job in jobs:
-            # Envia notificações para todos os canais
-            notified = await notify_new_jobs(asdict(job))
+            # Adicionado a vaga como um dicionário a lista
+            list_jobs.append(asdict(job))
 
             # Atualiza registro no banco de dados
-            # registrando que as vagas foram envidas pera o canais
-            if notified:
-                job.notified = True
-                session.add(job)
-                await session.commit()
+            # registrando que as vagas foram enviadas pera o canais
+            # job.notified = True
+            # session.add(job)
+            # await session.commit()
+            # TODO
+
+        # Envia notificações das vagas para todos os canais
+        await notify_new_jobs(list_jobs)
 
 
 def setup_scheduler():
     # Roda a cada 30 minutos
     scheduler.add_job(
         run_gupy_sync,
-        trigger=IntervalTrigger(minutes=settings.INTERVAL_SYNC),
+        trigger=IntervalTrigger(seconds=10),
         id='gupy_sync',
         name='Gupy Job Sync',
         replace_existing=True,
@@ -61,7 +67,7 @@ def setup_scheduler():
 
     scheduler.add_job(
         run_notify_new_jobs,
-        trigger=IntervalTrigger(minutes=settings.INTERVAL_SYNC),
+        trigger=IntervalTrigger(seconds=10),
         id='notify_new_jobs',
         name='Notifica sobre novas vagas',
         replace_existing=True,
