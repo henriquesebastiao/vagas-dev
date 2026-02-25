@@ -1,7 +1,11 @@
+import os
+
 import pytest
 from app.core.database import get_session
 from app.main import app
 from app.models import table_registry
+from app.wrappers.telegram import BotTelegram
+from dotenv import load_dotenv
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -9,6 +13,16 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from testcontainers.postgres import PostgresContainer
+
+
+@pytest.fixture(autouse=True, scope='session')
+def load_env():
+    load_dotenv()
+
+
+@pytest.fixture
+def bot_telegram():
+    return BotTelegram(token=os.getenv('TELEGRAM_BOT_TOKEN'))
 
 
 @pytest.fixture(scope='session')
