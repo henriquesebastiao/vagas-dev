@@ -68,6 +68,6 @@ class BaseJobScraper(ABC):
         await session.commit()
         logger.info(
             f'[{self.source_name}] {new_count} novas vagas '
-            'inseridas de {len(jobs)} encontradas.'
+            f'inseridas de {len(jobs)} encontradas.'
         )
         return new_count

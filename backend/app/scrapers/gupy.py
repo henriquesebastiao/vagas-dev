@@ -1,5 +1,6 @@
 from httpx import AsyncClient
 
+from app.keywords import KEYWORDS
 from app.scrapers.base import BaseJobScraper
 
 
@@ -24,7 +25,7 @@ class GupyScraper(BaseJobScraper):
             limit (int): vagas por página — use o máximo permitido pela API
                 para minimizar requests.
         """
-        self.keywords = keywords or ['python', 'backend']
+        self.keywords = keywords or KEYWORDS
         self.limit = limit
 
     async def fetch_jobs(self) -> list[dict]:

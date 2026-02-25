@@ -1,5 +1,13 @@
 from httpx import AsyncClient
 
+from app.keywords import (
+    BACKEND_KEYWORDS,
+    FRONTEND_KEYWORDS,
+    GOLANG_KEYWORDS,
+    JAVA_KEYWORDS,
+    PYTHON_KEYWORDS,
+)
+
 
 class BotTelegram:
     def __init__(self, token: str):
@@ -33,15 +41,15 @@ class BotTelegram:
 
                 # Define qual o tópico correto para enviar
                 # a vaga com base na sua palavra-chave
-                if keyword in {'python', 'fastapi', 'django'}:
+                if keyword in PYTHON_KEYWORDS:
                     topic_id = '3'
-                elif keyword in {'java'}:
+                elif keyword in JAVA_KEYWORDS:
                     topic_id = '5'
-                elif keyword in {'go', 'golang'}:
+                elif keyword in GOLANG_KEYWORDS:
                     topic_id = '6'
-                elif keyword in {'frontend'}:
+                elif keyword in FRONTEND_KEYWORDS:
                     topic_id = '8'
-                elif keyword in {'backend'}:
+                elif keyword in BACKEND_KEYWORDS:
                     topic_id = '7'
 
                 message = f"""{job['title']}\nEmpresa: {job['company']}
