@@ -56,6 +56,7 @@ quote-style = 'single'
 '**/routes/*.py' = ['PLR0917', 'PLR0913']
 'scheduler.py' = ['E712']
 'gupy.py' = ['E501']
+'**/tests/**/*.py' = ['E501']
 
 [tool.pytest.ini_options]
 addopts = '-p no:warnings'
@@ -63,6 +64,11 @@ asyncio_mode = 'auto'
 
 [tool.coverage.run]
 source = ["backend"]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "database.py",
+]
 
 [tool.coverage.report]
 show_missing = true
