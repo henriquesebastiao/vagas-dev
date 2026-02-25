@@ -8,6 +8,8 @@ async def test_telegram_send_message(bot_telegram, get_chat_id):
         chat_id=chat_id, text='Mensagem de teste'
     )
 
+    print(bot_telegram._token)
+
     assert response.status_code == HTTPStatus.OK
     assert response.json()['ok']
 

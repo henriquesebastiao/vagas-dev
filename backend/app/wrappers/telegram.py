@@ -12,13 +12,13 @@ from app.keywords import (
 
 class BotTelegram:
     def __init__(self, token: str):
-        self.token = token
+        self._token = token
 
     async def send_message(
         self, chat_id: str, text: str, topic_id: str | None = None
     ) -> Response:
         async with AsyncClient(
-            base_url=f'https://api.telegram.org/bot{self.token}', timeout=30
+            base_url=f'https://api.telegram.org/bot{self._token}', timeout=30
         ) as client:
             payload = {
                 'chat_id': chat_id,
@@ -36,7 +36,7 @@ class BotTelegram:
         self, jobs: list[dict], chat_id: str
     ) -> bool:
         async with AsyncClient(
-            base_url=f'https://api.telegram.org/bot{self.token}', timeout=30
+            base_url=f'https://api.telegram.org/bot{self._token}', timeout=30
         ) as client:
             for job in jobs:
                 keyword = job['keyword']
