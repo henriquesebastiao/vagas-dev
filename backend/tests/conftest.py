@@ -2,6 +2,7 @@ import os
 
 import pytest
 from app.core.database import get_session
+from app.core.settings import get_settings
 from app.main import app
 from app.models import table_registry
 from app.wrappers.telegram import BotTelegram
@@ -33,7 +34,7 @@ def get_chat_id():
 
 @pytest.fixture
 def bot_telegram():
-    return BotTelegram(token=os.getenv('TELEGRAM_BOT_TOKEN'))
+    return BotTelegram(token=get_settings().TELEGRAM_BOT_TOKEN)
 
 
 @pytest.fixture(scope='session')
