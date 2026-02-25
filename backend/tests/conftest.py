@@ -27,6 +27,11 @@ def load_env():
 
 
 @pytest.fixture
+def get_chat_id():
+    return '-1003737014042'
+
+
+@pytest.fixture
 def bot_telegram():
     return BotTelegram(token=os.getenv('TELEGRAM_BOT_TOKEN'))
 
