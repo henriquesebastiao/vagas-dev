@@ -1,12 +1,8 @@
-import os
 
 import pytest
 from app.core.database import get_session
-from app.core.settings import get_settings
 from app.main import app
 from app.models import table_registry
-from app.wrappers.telegram import BotTelegram
-from dotenv import load_dotenv
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -14,32 +10,6 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from testcontainers.postgres import PostgresContainer
-
-
-@pytest.fixture(autouse=True, scope='session')
-def load_env():
-    load_dotenv()
-    get_settings.cache_clear()
-
-    os.environ['TELEGRAM_PYTHON_TOPIC_ID'] = '3'
-    os.environ['TELEGRAM_JAVA_TOPIC_ID'] = '4'
-    os.environ['TELEGRAM_GOLANG_TOPIC_ID'] = '5'
-    os.environ['TELEGRAM_FRONTEND_TOPIC_ID'] = '6'
-    os.environ['TELEGRAM_BACKEND_TOPIC_ID'] = '7'
-
-
-@pytest.fixture
-def get_chat_id():
-    return '-1003737014042'
-
-
-@pytest.fixture
-def bot_telegram(load_env):
-    settings = get_settings()
-    print(
-        f'TOKEN: {settings.TELEGRAM_BOT_TOKEN[:10]}...'
-    )  # primeiros 10 chars
-    return BotTelegram(token=get_settings().TELEGRAM_BOT_TOKEN)
 
 
 @pytest.fixture(scope='session')
