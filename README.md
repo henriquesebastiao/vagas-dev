@@ -2,6 +2,9 @@
 
 Um sistema de monitoramento de vagas de emprego para desenvolvedores. Monitora múltiplas plataformas periodicamente e expõe tudo por meio de uma única API.
 
+> [!IMPORTANT]
+> O sistema está na sua fase inicial de desenvolvimento. Novas fontes e notificações em mensageiros serão adicionadas em breve.
+> Caso queira contribuir, sinta-se à vontade para abrir um PR ou issue com sugestões!
 
 ## Funcionalidades
 
