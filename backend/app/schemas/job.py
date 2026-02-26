@@ -44,3 +44,10 @@ class JobOut(BaseModel):
     found_at: datetime
     notified: bool
     for_pcd: bool = False
+
+
+class SourceOut(BaseModel):
+    """Schema para contagem de vagas por fonte"""
+
+    source: JobSource
+    count: int

@@ -12,7 +12,9 @@ class Settings(BaseSettings):
     DATABASE_URL: str = 'postgresql+psycopg://user:password@localhost:5432/db'
 
     # App
+    APP_URL: str = 'http://localhost:8000'
     INTERVAL_SYNC: int = 30  # Intervalo de execução dos jobs do scheduler
+    VERSION: str = 'dev'
 
     # Telegram
     TELEGRAM_BOT_TOKEN: str = ''

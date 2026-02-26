@@ -4,7 +4,8 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, status
 from sqlalchemy import func, or_, select
 
 from app.models import Job
-from app.schemas.job import JobOut
+from app.schemas import Message
+from app.schemas.job import JobOut, SourceOut
 from app.scrapers.gupy import GupyScraper
 from app.utils import Session
 
@@ -22,6 +23,18 @@ async def list_jobs(
     limit: Annotated[int, Query(le=200)] = 50,
     offset: Annotated[int, Query()] = 0,
 ):
+    """
+    Lista as vagas de emprego encontradas com base nos filtros opcionais.
+    Os seguintes filtros estão disponíveis:
+
+    - **source**: filtra por fonte de onde a vaga foi coletada (ex: "gupy")
+    - **keyword**: busca por palavra-chave no título ou descrição da vaga
+    - **location**: filtra por localidade (ex: "Brasil", "São Paulo", etc.)
+    - **workplace_type**: filtra por tipo de trabalho (ex: "remote", "hybrid", "on-site")
+    - **for_pcd**: filtra por vagas destinadas a pessoas com deficiência (true/false)
+    - **limit**: número máximo de vagas a retornar (padrão: 50, máximo: 200)
+    - **offset**: número de vagas a pular para paginação (padrão: 0)
+    """
     query = select(Job).order_by(Job.found_at.desc())
 
     if source:
@@ -45,7 +58,11 @@ async def list_jobs(
     return result.scalars().all()
 
 
-@router.post('/sync/{source}', status_code=status.HTTP_202_ACCEPTED)
+@router.post(
+    '/sync/{source}',
+    status_code=status.HTTP_202_ACCEPTED,
+    response_model=Message,
+)
 async def trigger_sync(
     source: str, background_tasks: BackgroundTasks, session: Session
 ):
@@ -64,7 +81,7 @@ async def trigger_sync(
     return {'message': f"Sync de '{source}' iniciado em background."}
 
 
-@router.get('/sources')
+@router.get('/sources', response_model=list[SourceOut])
 async def list_sources(db: Session):
     result = await db.execute(
         select(Job.source, func.count(Job.id)).group_by(Job.source)
