@@ -28,6 +28,9 @@ dev = [
     "taskipy>=1.14.1",
     "testcontainers>=4.14.1",
 ]
+doc = [
+    "zensical>=0.0.24",
+]
 
 [tool.uv]
 upgrade = true
@@ -83,4 +86,5 @@ lint = 'uv run ruff check .; uv run ruff check . --diff; uv run radon cc ./backe
 format = 'ruff format .; ruff check . --fix'
 run = 'uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4 --app-dir backend'
 dev = 'uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1 --app-dir backend --reload'
+doc = 'uv run zensical serve --dev-addr localhost:3000 --open'
 test = 'pytest -s -x --cov=backend/app -v; coverage html'
