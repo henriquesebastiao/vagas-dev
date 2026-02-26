@@ -1,4 +1,3 @@
-
 import pytest
 from app.core.database import get_session
 from app.main import app

@@ -102,4 +102,5 @@ class GupyScraper(BaseJobScraper):
             'workplace_type': raw.get('workplaceType'),
             'published_at': raw.get('publishedDate'),
             'end_applications': raw.get('applicationDeadline'),
+            'for_pcd': raw.get('badges', {}).get('isPWD', False),
         }

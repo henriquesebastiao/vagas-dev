@@ -18,6 +18,7 @@ async def list_jobs(
     keyword: Annotated[str | None, Query()] = None,
     location: Annotated[str | None, Query()] = None,
     workplace_type: Annotated[str | None, Query()] = None,
+    for_pcd: Annotated[bool | None, Query()] = None,
     limit: Annotated[int, Query(le=200)] = 50,
     offset: Annotated[int, Query()] = 0,
 ):
@@ -36,6 +37,8 @@ async def list_jobs(
         query = query.where(Job.location.ilike(f'%{location}%'))
     if workplace_type:
         query = query.where(Job.workplace_type == workplace_type)
+    if for_pcd:
+        query = query.where(Job.for_pcd == for_pcd)
 
     query = query.limit(limit).offset(offset)
     result = await session.execute(query)

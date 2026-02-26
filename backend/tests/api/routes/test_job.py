@@ -27,6 +27,11 @@ async def test_list_jobs_with_workplace_type_return_200(client):
     assert response.status_code == status.HTTP_200_OK
 
 
+async def test_list_jobs_with_for_pcd_return_200(client):
+    response = await client.get('/jobs/?for_pcd=true')
+    assert response.status_code == status.HTTP_200_OK
+
+
 async def test_list_sources(client):
     response = await client.get('/jobs/sources')
     assert response.status_code == status.HTTP_200_OK
