@@ -19,12 +19,13 @@ from testcontainers.postgres import PostgresContainer
 @pytest.fixture(autouse=True, scope='session')
 def load_env():
     load_dotenv()
+    get_settings.cache_clear()
 
-    os.putenv('TELEGRAM_PYTHON_TOPIC_ID', '3')
-    os.putenv('TELEGRAM_JAVA_TOPIC_ID', '4')
-    os.putenv('TELEGRAM_GOLANG_TOPIC_ID', '5')
-    os.putenv('TELEGRAM_FRONTEND_TOPIC_ID', '6')
-    os.putenv('TELEGRAM_BACKEND_TOPIC_ID', '7')
+    os.environ['TELEGRAM_PYTHON_TOPIC_ID'] = '3'
+    os.environ['TELEGRAM_JAVA_TOPIC_ID'] = '4'
+    os.environ['TELEGRAM_GOLANG_TOPIC_ID'] = '5'
+    os.environ['TELEGRAM_FRONTEND_TOPIC_ID'] = '6'
+    os.environ['TELEGRAM_BACKEND_TOPIC_ID'] = '7'
 
 
 @pytest.fixture
