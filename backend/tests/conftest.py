@@ -35,6 +35,10 @@ def get_chat_id():
 
 @pytest.fixture
 def bot_telegram():
+    settings = get_settings()
+    print(
+        f'TOKEN: {settings.TELEGRAM_BOT_TOKEN[:10]}...'
+    )  # primeiros 10 chars
     return BotTelegram(token=get_settings().TELEGRAM_BOT_TOKEN)
 
 
