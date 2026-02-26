@@ -34,7 +34,7 @@ def get_chat_id():
 
 
 @pytest.fixture
-def bot_telegram():
+def bot_telegram(load_env):
     settings = get_settings()
     print(
         f'TOKEN: {settings.TELEGRAM_BOT_TOKEN[:10]}...'
