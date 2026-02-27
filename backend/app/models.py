@@ -1,29 +1,10 @@
 from datetime import datetime
-from enum import Enum
 
 from pytz import utc
 from sqlalchemy import DateTime, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, registry
 
-
-class JobSource(str, Enum):
-    linkedin = 'linkedin'
-    gupy = 'gupy'
-
-
-class JobLevel(str, Enum):
-    junior = 'junior'
-    pleno = 'pleno'
-    senior = 'senior'
-    estagio = 'estagio'
-    trainee = 'trainee'
-
-
-class WorkplaceType(str, Enum):
-    remote = 'remote'
-    hybrid = 'hybrid'
-    on_site = 'on-site'
-
+from app.enum import JobLevel, JobSource, WorkplaceType
 
 table_registry = registry()
 

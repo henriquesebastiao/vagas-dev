@@ -4,7 +4,8 @@ from typing import Annotated
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, status
 from sqlalchemy import func, or_, select
 
-from app.models import Job, JobLevel
+from app.enum import JobLevel, JobSource, Keyword, WorkplaceType
+from app.models import Job
 from app.schemas import Message
 from app.schemas.job import JobOut, SourceOut
 from app.scrapers.gupy import GupyScraper
@@ -18,10 +19,10 @@ router = APIRouter(prefix='/jobs', tags=['jobs'])
 @router.get('/', response_model=list[JobOut])
 async def list_jobs(
     session: Session,
-    source: Annotated[str | None, Query()] = None,
-    keyword: Annotated[str | None, Query()] = None,
+    source: Annotated[JobSource | None, Query()] = None,
+    keyword: Annotated[Keyword | None, Query()] = None,
     location: Annotated[str | None, Query()] = None,
-    workplace_type: Annotated[str | None, Query()] = None,
+    workplace_type: Annotated[WorkplaceType | None, Query()] = None,
     for_pcd: Annotated[bool | None, Query()] = None,
     level: Annotated[JobLevel | None, Query()] = None,
     limit: Annotated[int, Query(le=200)] = 50,

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from app.models import JobLevel, JobSource, WorkplaceType
+from app.enum import JobLevel, JobSource, WorkplaceType
 
 
 class JobOut(BaseModel):
