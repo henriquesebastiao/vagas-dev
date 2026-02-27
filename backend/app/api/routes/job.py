@@ -1,3 +1,4 @@
+import logging
 from typing import Annotated
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, status
@@ -8,6 +9,8 @@ from app.schemas import Message
 from app.schemas.job import JobOut, SourceOut
 from app.scrapers.gupy import GupyScraper
 from app.utils import Session
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix='/jobs', tags=['jobs'])
 
@@ -67,6 +70,7 @@ async def trigger_sync(
     source: str, background_tasks: BackgroundTasks, session: Session
 ):
     """Dispara uma sincronização manual via endpoint."""
+    logger.info(f'Iniciando sync manual para fonte: {source}')
     scrapers = {'gupy': GupyScraper}
 
     if source not in scrapers:

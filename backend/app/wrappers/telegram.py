@@ -1,3 +1,6 @@
+import logging
+from http import HTTPStatus
+
 from httpx import AsyncClient, Response
 
 from app.core.settings import get_settings
@@ -8,6 +11,8 @@ from app.keywords import (
     JAVA_KEYWORDS,
     PYTHON_KEYWORDS,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class BotTelegram:
@@ -28,7 +33,17 @@ class BotTelegram:
             if topic_id:
                 payload['message_thread_id'] = topic_id  # pragma: no cover
 
+            logger.info(
+                'Enviando mensagem para '
+                f'chat_id={chat_id} com topic_id={topic_id}'
+            )
             response = await client.post('/sendMessage', json=payload)
+
+            if response.status_code != HTTPStatus.OK:
+                logger.error(
+                    'Erro ao enviar mensagem: '
+                    f'{response.status_code} - {response.text}'
+                )
 
             return response
 
@@ -38,6 +53,10 @@ class BotTelegram:
         async with AsyncClient(
             base_url=f'https://api.telegram.org/bot{self._token}', timeout=30
         ) as client:
+            logger.info(
+                'Enviando notificações de vagas para '
+                f'chat_id={chat_id} - Total vagas: {len(jobs)}'
+            )
             for job in jobs:
                 keyword = job['keyword']
                 topic_id = None
@@ -69,5 +88,11 @@ class BotTelegram:
                     # Adiciona o ID do tópico ao json da requisição POST
                     payload['message_thread_id'] = topic_id
 
-                await client.post('/sendMessage', json=payload)
+                response = await client.post('/sendMessage', json=payload)
+
+                if response.status_code != HTTPStatus.OK:
+                    logger.error(
+                        'Erro ao enviar mensagem: '
+                        f'{response.status_code} - {response.text}'
+                    )
             return True

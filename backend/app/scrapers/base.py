@@ -42,6 +42,7 @@ class BaseJobScraper(ABC):
 
         Retorna o número de novas vagas inseridas nesta execução.
         """
+        logger.info(f'Iniciando sincronização para fonte: {self.source_name}')
         jobs = await self.fetch_jobs()
         new_count = 0
 

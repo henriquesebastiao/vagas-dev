@@ -1,7 +1,11 @@
+import logging
+
 from httpx import AsyncClient
 
 from app.keywords import KEYWORDS
 from app.scrapers.base import BaseJobScraper
+
+logger = logging.getLogger(__name__)
 
 
 class GupyScraper(BaseJobScraper):
@@ -35,6 +39,9 @@ class GupyScraper(BaseJobScraper):
         Ao final, deduplicadas por `external_id` antes de retornar,
         pois a mesma vaga pode aparecer em buscas por keywords diferentes.
         """
+        logger.info(
+            f'Iniciando coleta de vagas da Gupy para keywords: {self.keywords}'
+        )
         all_jobs = []
 
         async with AsyncClient(timeout=30) as client:
