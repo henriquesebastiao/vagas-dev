@@ -4,6 +4,7 @@ from httpx import AsyncClient
 
 from app.keywords import KEYWORDS
 from app.scrapers.base import BaseJobScraper
+from app.utils import get_level_seniority
 
 logger = logging.getLogger(__name__)
 
@@ -68,6 +69,12 @@ class GupyScraper(BaseJobScraper):
                     for job in jobs:
                         # marca a vaga com o keyword que a encontrou
                         job['keyword'] = keyword
+
+                        # extrai o nível de senioridade do título da vaga usando a função utilitária
+                        title = job.get('name', '')
+                        level = get_level_seniority(title)
+                        job['level'] = level
+
                         all_jobs.append(self._parse(job))
 
                     # Paginação
@@ -110,4 +117,5 @@ class GupyScraper(BaseJobScraper):
             'published_at': raw.get('publishedDate'),
             'end_applications': raw.get('applicationDeadline'),
             'for_pcd': raw.get('badges', {}).get('isPWD', False),
+            'level': raw.get('level', None),
         }

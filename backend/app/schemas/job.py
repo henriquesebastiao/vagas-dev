@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from app.models import JobSource, WorkplaceType
+from app.models import JobLevel, JobSource, WorkplaceType
 
 
 class JobOut(BaseModel):
@@ -44,6 +44,7 @@ class JobOut(BaseModel):
     found_at: datetime
     notified: bool
     for_pcd: bool = False
+    level: JobLevel | None
 
 
 class SourceOut(BaseModel):

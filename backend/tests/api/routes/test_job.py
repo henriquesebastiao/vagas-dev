@@ -32,6 +32,19 @@ async def test_list_jobs_with_for_pcd_return_200(client):
     assert response.status_code == status.HTTP_200_OK
 
 
+async def test_list_jobs_with_level_return_200(client):
+    response = await client.get('/jobs/?level=senior')
+    assert response.status_code == status.HTTP_200_OK
+
+
+async def test_list_jobs_with_level_does_not_return_other_levels(client):
+    response = await client.get('/jobs/?level=senior')
+    assert response.status_code == status.HTTP_200_OK
+    jobs = response.json()
+    for job in jobs:
+        assert job['level'] == 'senior'
+
+
 async def test_list_sources(client):
     response = await client.get('/jobs/sources')
     assert response.status_code == status.HTTP_200_OK

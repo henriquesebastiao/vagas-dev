@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, status
 from sqlalchemy import func, or_, select
 
-from app.models import Job
+from app.models import Job, JobLevel
 from app.schemas import Message
 from app.schemas.job import JobOut, SourceOut
 from app.scrapers.gupy import GupyScraper
@@ -23,6 +23,7 @@ async def list_jobs(
     location: Annotated[str | None, Query()] = None,
     workplace_type: Annotated[str | None, Query()] = None,
     for_pcd: Annotated[bool | None, Query()] = None,
+    level: Annotated[JobLevel | None, Query()] = None,
     limit: Annotated[int, Query(le=200)] = 50,
     offset: Annotated[int, Query()] = 0,
 ):
@@ -35,6 +36,7 @@ async def list_jobs(
     - **location**: filtra por localidade (ex: "Brasil", "São Paulo", etc.)
     - **workplace_type**: filtra por tipo de trabalho (ex: "remote", "hybrid", "on-site")
     - **for_pcd**: filtra por vagas destinadas a pessoas com deficiência (true/false)
+    - **level**: filtra por nível de senioridade (ex: "junior", "pleno", "senior", "estagio", "trainee")
     - **limit**: número máximo de vagas a retornar (padrão: 50, máximo: 200)
     - **offset**: número de vagas a pular para paginação (padrão: 0)
     """
@@ -55,6 +57,8 @@ async def list_jobs(
         query = query.where(Job.workplace_type == workplace_type)
     if for_pcd:
         query = query.where(Job.for_pcd == for_pcd)
+    if level:
+        query = query.where(Job.level == level)
 
     query = query.limit(limit).offset(offset)
     result = await session.execute(query)

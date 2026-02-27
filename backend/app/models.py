@@ -11,6 +11,14 @@ class JobSource(str, Enum):
     gupy = 'gupy'
 
 
+class JobLevel(str, Enum):
+    junior = 'junior'
+    pleno = 'pleno'
+    senior = 'senior'
+    estagio = 'estagio'
+    trainee = 'trainee'
+
+
 class WorkplaceType(str, Enum):
     remote = 'remote'
     hybrid = 'hybrid'
@@ -54,6 +62,9 @@ class Job:
     )
     for_pcd: Mapped[bool] = mapped_column(
         default=False, server_default='false'
+    )
+    level: Mapped[JobLevel | None] = mapped_column(
+        String(10), nullable=True, server_default=None, default=None
     )
 
     __table_args__ = (
