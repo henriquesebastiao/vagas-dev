@@ -29,6 +29,16 @@ site_author = "Henrique Sebastião"
 # Read more: https://zensical.org/docs/setup/basics/#site_url
 #site_url = "https://www.example.com/"
 
+
+# https://zensical.org/docs/setup/repository/#repository-url
+repo_url = "https://github.com/henriquesebastiao/vagas-dev"
+
+# https://zensical.org/docs/setup/repository/#repository-name
+repo_name = "henriquesebastiao/vagas-dev"
+
+# https://zensical.org/docs/setup/repository/#edit_uri
+edit_uri = "edit/main/docs/"
+
 # The copyright notice appears in the page footer and can contain an HTML
 # fragment.
 #
@@ -44,10 +54,17 @@ Copyright &copy; 2026 Henrique Sebastião
 # can be defined using TOML syntax.
 #
 # Read more: https://zensical.org/docs/setup/navigation/
-# nav = [
-#   { "Get started" = "index.md" },
-#   { "Markdown in 5min" = "markdown.md" },
-# ]
+ nav = [
+     {"Início" = [
+         {"Início" = "index.md"},
+         {"Roadmap" = "roadmap.md"},
+         {"Licença" = "license.md"},
+     ]},
+     {"Referência da API" = [
+         {"Introdução" = "api/index.md"},
+         {"Endpoints" = "api/endpoints.md"},
+     ]},
+ ]
 
 # With the "extra_css" option you can add your own CSS styling to customize
 # your Zensical project according to your needs. You can add any number of
@@ -57,7 +74,7 @@ Copyright &copy; 2026 Henrique Sebastião
 #
 # Read more: https://zensical.org/docs/customization/#additional-css
 #
-#extra_css = ["stylesheets/extra.css"]
+extra_css = ["stylesheets/extra.css"]
 
 # With the `extra_javascript` option you can add your own JavaScript to your
 # project to customize the behavior according to your needs.
@@ -108,7 +125,7 @@ Copyright &copy; 2026 Henrique Sebastião
 # Read more:
 # - https://zensical.org/docs/setup/language/
 #
-    language = "pt-BR"
+language = "pt-BR"
 
 # Zensical provides a number of feature toggles that change the behavior
 # of the documentation site.
@@ -179,7 +196,7 @@ features = [
     # When section index pages are enabled, documents can be directly attached
     # to sections, which is particularly useful for providing overview pages.
     # https://zensical.org/docs/setup/navigation/#section-index-pages
-    "navigation.indexes",
+#    "navigation.indexes",
 
     # When instant navigation is enabled, clicks on all internal links will be
     # intercepted and dispatched via XHR without fully reloading the page.
@@ -215,7 +232,7 @@ features = [
     # When tabs are enabled, top-level sections are rendered in a menu layer
     # below the header for viewports above 1220px, but remain as-is on mobile.
     # https://zensical.org/docs/setup/navigation/#navigation-tabs
-    #"navigation.tabs",
+    "navigation.tabs",
 
     # When sticky tabs are enabled, navigation tabs will lock below the header
     # and always remain visible when scrolling down.
@@ -261,12 +278,14 @@ features = [
 [[project.theme.palette]]
 scheme = "default"
 toggle.icon = "lucide/sun"
-toggle.name = "Switch to dark mode"
+toggle.name = "Mude para o modo escuro"
 
 [[project.theme.palette]]
+primary = "custom"
+accent = "custom"
 scheme = "slate"
 toggle.icon = "lucide/moon"
-toggle.name = "Switch to light mode"
+toggle.name = "Mude para o modo claro"
 
 # ----------------------------------------------------------------------------
 # In the "font" subsection you can configure the fonts used. By default, fonts
@@ -293,15 +312,21 @@ toggle.name = "Switch to light mode"
 # - https://zensical.org/docs/setup/logo-and-icons
 # - https://zensical.org/docs/authoring/icons-emojis/#search
 # ----------------------------------------------------------------------------
-#[project.theme.icon]
-#logo = "lucide/smile"
-#repo = "lucide/smile"
+[project.theme.icon]
+logo = "lucide/briefcase-business"
+#repo = "lucide/briefcase-business"
 
 # ----------------------------------------------------------------------------
 # The "extra" section contains miscellaneous settings.
 # ----------------------------------------------------------------------------
-#[[project.extra.social]]
-#icon = "fontawesome/brands/github"
-#link = "https://github.com/user/repo"
+[[project.extra.social]]
+icon = "fontawesome/brands/discord"
+link = "https://discord.gg/MnnnvNQauf"
 
+[[project.extra.social]]
+icon = "fontawesome/brands/telegram"
+link = "https://t.me/+5faW_wL4ybNhMjY5"
 
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/henriquesebastiao/vagas-dev"
