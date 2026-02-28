@@ -2,7 +2,7 @@ import logging
 from typing import Annotated
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, status
-from sqlalchemy import func, or_, select
+from sqlalchemy import func, select
 
 from app.enum import JobLevel, JobSource, Keyword, WorkplaceType
 from app.models import Job
@@ -44,21 +44,20 @@ async def list_jobs(
     query = select(Job).order_by(Job.found_at.desc())
 
     if source:
+        source = source.value
         query = query.where(Job.source == source)
     if keyword:
-        query = query.where(
-            or_(
-                Job.title.ilike(f'%{keyword}%'),
-                Job.description.ilike(f'%{keyword}%'),
-            )
-        )
+        keyword = keyword.value
+        query = query.where(Job.title.ilike(f'%{keyword}%'))
     if location:
         query = query.where(Job.location.ilike(f'%{location}%'))
     if workplace_type:
+        workplace_type = workplace_type.value
         query = query.where(Job.workplace_type == workplace_type)
     if for_pcd:
         query = query.where(Job.for_pcd == for_pcd)
     if level:
+        level = level.value
         query = query.where(Job.level == level)
 
     query = query.limit(limit).offset(offset)
@@ -72,7 +71,7 @@ async def list_jobs(
     response_model=Message,
 )
 async def trigger_sync(
-    source: str, background_tasks: BackgroundTasks, session: Session
+    source: JobSource, background_tasks: BackgroundTasks, session: Session
 ):
     """Dispara uma sincronização manual via endpoint."""
     logger.info(f'Iniciando sync manual para fonte: {source}')
