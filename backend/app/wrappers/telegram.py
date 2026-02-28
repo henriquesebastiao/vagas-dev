@@ -64,13 +64,6 @@ class BotTelegram:
     async def send_notification_jobs(
         self, jobs: list[dict], chat_id: str, session: AsyncSession
     ) -> bool:
-        # retry = Retry(
-        #     total=5,
-        #     backoff_factor=0.5,
-        #     status_forcelist=[429, 500, 502, 503, 504],
-        # )
-        # transport = RetryTransport(retry=retry)
-
         # Configura um rate limiter para evitar
         # atingir os limites da API do Telegram.
         # 20 mensagens por minuto
