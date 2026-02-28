@@ -97,7 +97,8 @@ sort = "-Cover"
 show_contexts = true
 
 [tool.taskipy.tasks]
-lint = {cmd='uv run ruff check .; uv run ruff check . --diff; uv run radon cc ./backend -a -na', help='Executa o linting usando o ruff e analisa a complexidade do código com o radon.'}
+lint = {cmd='uv run ruff check .; uv run ruff check . --diff;', help='Executa a lintagem do código usando o ruff, verificando tanto os erros quanto as diferenças de formatação.'}
+radon = {cmd='uv run radon cc ./backend -a -na', help='Analisa a complexidade do código usando o radon.'}
 format = {cmd='ruff format .; ruff check . --fix', help='Formata o código usando o ruff'}
 run = {cmd='uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4 --app-dir backend', help='Inicia o servidor FastAPI em modo de produção com 4 workers.'}
 dev = {cmd='uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1 --app-dir backend --reload --log-level debug', help='Inicia o servidor FastAPI em modo de desenvolvimento com hot reload e log detalhado.'}
