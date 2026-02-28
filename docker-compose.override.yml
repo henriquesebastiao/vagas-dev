@@ -1,0 +1,20 @@
+services:
+  app:
+    restart: no
+    ports:
+      - "8000:8000"
+    develop:
+      watch:
+        - path: ./backend
+          action: sync
+          target: /code/backend
+          ignore:
+            - .venv
+        - path: ./requirements.txt
+          action: rebuild
+  database:
+    restart: no
+    ports:
+      - "5432:5432"
+  web:
+    restart: no
