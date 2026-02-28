@@ -1,4 +1,6 @@
+import html
 import logging
+import re
 
 from httpx import AsyncClient
 
@@ -89,7 +91,31 @@ class GupyScraper(BaseJobScraper):
         return list(seen.values())
 
     @staticmethod
-    def _parse(raw: dict) -> dict:
+    def _clean_description(raw_text: str | None) -> str | None:
+        if not raw_text:
+            return None
+
+        # Decodifica entidades HTML (&nbsp; → espaço, &amp; → &, etc.)
+        text = html.unescape(raw_text)
+
+        # Remove tags HTML residuais (<br>, <p>, <strong>, etc.)
+        text = re.sub(r'<[^>]+>', '\n', text)
+
+        # Remove caracteres de lista estranhos (·, •, ·)
+        text = re.sub(r'[·•]', '-', text)
+
+        # Colapsa múltiplos espaços em um só
+        text = re.sub(r' {2,}', ' ', text)
+
+        # Colapsa mais de duas quebras de linha seguidas
+        text = re.sub(r'\n{3,}', '\n\n', text)
+
+        # Remove espaços no início e fim de cada linha
+        lines = [line.strip() for line in text.splitlines()]
+
+        return '\n'.join(lines).strip()
+
+    def _parse(self, raw: dict) -> dict:
         """Normaliza o payload bruto da API para o formato interno do model.
 
         Isola o acoplamento com o contrato da API da Gupy neste único método:
@@ -112,7 +138,7 @@ class GupyScraper(BaseJobScraper):
             'company': raw.get('careerPageName', ''),
             'location': location,
             'url': raw.get('jobUrl', ''),
-            'description': raw.get('description'),
+            'description': self._clean_description(raw.get('description')),
             'workplace_type': raw.get('workplaceType'),
             'published_at': raw.get('publishedDate'),
             'end_applications': raw.get('applicationDeadline'),

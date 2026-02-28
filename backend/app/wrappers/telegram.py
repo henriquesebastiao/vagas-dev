@@ -80,7 +80,7 @@ class BotTelegram:
 
                 message = f"""{job['title']}\nEmpresa: {job['company']}
 \nLocal: {job['location']}\nModelo: {job['workplace_type']}
-\n\n{job['description']}\n\nLink: {job['url']}"""
+\n{job['description']}\n\nLink: {job['url']}"""
 
                 payload = {
                     'chat_id': chat_id,
