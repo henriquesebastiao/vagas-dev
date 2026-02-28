@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 
@@ -23,6 +24,20 @@ Inicialmente, as vagas são coletadas da plataforma Gupy, mas a arquitetura é m
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
+
+    # Aplica migrations pendentes automaticamente no startup
+    proc = await asyncio.create_subprocess_exec(
+        'alembic',
+        'upgrade',
+        'head',
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    stdout, stderr = await proc.communicate()
+
+    if proc.returncode != 0:
+        raise RuntimeError(f'Falha ao aplicar migrations:\n{stderr.decode()}')
+
     setup_scheduler()
     yield
     # Shutdown
