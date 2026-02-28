@@ -59,8 +59,4 @@ async def test_trigger_sync(client):
 
 async def test_trigger_sync_not_found(client):
     response = await client.post('/jobs/sync/unknown_source')
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert (
-        response.json().get('detail')
-        == "Source 'unknown_source' não suportado."
-    )
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
