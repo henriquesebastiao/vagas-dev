@@ -59,6 +59,7 @@ Copyright &copy; 2026 Henrique Sebastião
          {"Início" = "index.md"},
          {"Roadmap" = "roadmap.md"},
          {"Licença" = "license.md"},
+         {"Changelog" = "changelog.md"},
      ]},
      {"Referência da API" = [
          {"Introdução" = "api/index.md"},

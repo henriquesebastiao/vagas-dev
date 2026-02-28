@@ -7,7 +7,7 @@ services:
       watch:
         - path: ./backend
           action: sync
-          target: /code/backend
+          target: /app/backend
           ignore:
             - .venv
         - path: ./requirements.txt

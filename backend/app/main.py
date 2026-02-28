@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app import __version__
 from app.api.routes import job
 from app.core.settings import get_settings
 from app.scheduler import scheduler, setup_scheduler
@@ -48,7 +49,7 @@ app = FastAPI(
     title='Vagas DEV - API',
     docs_url='/',
     description=description,
-    version=settings.VERSION,
+    version=__version__,
     lifespan=lifespan,
     terms_of_service='https://github.com/henriquesebastiao/vagas-dev/',
     contact={
