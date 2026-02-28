@@ -14,15 +14,16 @@ Retorna uma lista de vagas de trabalho encontradas e registradas no banco de dad
 
 #### Parâmetros de consulta
 
-| Parâmetro        | Tipo   | Descrição                                 | Exemplo de valor |
-|------------------|--------|-------------------------------------------|------------------|
-| `keyword`        | string | Busca no título e descrição da vaga       | "python"         |
-| `source`         | string | Filtra por fonte (`gupy`, etc.)           | "gupy"           |
-| `location`       | string | Filtra por cidade ou estado               | "São Paulo"      |
-| `workplace_type` | string | `remote`, `hybrid` ou `on-site`           | "remote"         |
-| `for_pcd`        | bool   | Filtra vagas para pessoas com deficiência | true             |
-| `limit`          | int    | Máximo de resultados (padrão: 50)         | 20               |
-| `offset`         | int    | Paginação                                 | 0                |
+| Parâmetro        | Tipo   | Descrição                                                          | Exemplo de valor |
+|------------------|--------|--------------------------------------------------------------------|------------------|
+| `keyword`        | string | Busca no título e descrição da vaga                                | "python"         |
+| `source`         | string | Filtra por fonte (`gupy`, etc.)                                    | "gupy"           |
+| `location`       | string | Filtra por cidade ou estado                                        | "São Paulo"      |
+| `workplace_type` | string | `remote`, `hybrid` ou `on-site`                                    | "remote"         |
+| `for_pcd`        | bool   | Filtra vagas para pessoas com deficiência                          | true             |
+| `level`          | string | Nível da vaga (`junior`, `pleno`, `senior`, `estagio` e `trainee`) | "pleno"          |
+| `limit`          | int    | Máximo de resultados (padrão: 50)                                  | 20               |
+| `offset`         | int    | Paginação                                                          | 0                |
 
 #### Request
 
@@ -71,8 +72,9 @@ Retorna uma lista de vagas de trabalho encontradas e registradas no banco de dad
     "published_at": "2024-05-30T10:00:00Z",
     "end_applications": "2024-06-30T23:59:59Z",
     "found_at": "2024-06-01T12:00:00Z",
-    "notified": false,
+    "telegram_notified": false,
     "for_pcd": false,
+    "level": "pleno"
   },
   ...
 ]
