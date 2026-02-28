@@ -2,11 +2,19 @@ import html
 import logging
 import re
 
-from httpx import AsyncClient
+import hishel
+import hishel.httpx
+import httpx
+from httpx_retries import Retry, RetryTransport
 
 from app.keywords import KEYWORDS
 from app.scrapers.base import BaseJobScraper
-from app.utils import get_level_seniority
+from app.utils import (
+    add_time,
+    after_request,
+    before_request,
+    get_level_seniority,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +29,7 @@ class GupyScraper(BaseJobScraper):
     """
 
     source_name = 'gupy'
-    BASE_URL = 'https://employability-portal.gupy.io/api/v1/jobs'
+    BASE_URL = 'https://employability-portal.gupy.io/api/v1'
 
     def __init__(self, keywords: list[str] = None, limit: int = 100):
         """Monta o scraper com os parâmetros de busca.
@@ -47,7 +55,26 @@ class GupyScraper(BaseJobScraper):
         )
         all_jobs = []
 
-        async with AsyncClient(timeout=30) as client:
+        # Configura retry para lidar com falhas temporárias da API (ex: 500, 502, etc.)
+        retry = Retry(total=5, backoff_factor=0.5)
+        transport = httpx.AsyncHTTPTransport(verify=False)
+        retry_transport = RetryTransport(transport, retry=retry)
+
+        # Cache HTTP para evitar buscar os dados quando não houver mudanças
+        transport = hishel.httpx.AsyncCacheTransport(
+            next_transport=retry_transport,
+            storage=hishel.AsyncSqliteStorage(),
+        )
+
+        async with httpx.AsyncClient(
+            base_url=self.BASE_URL,
+            transport=transport,
+            timeout=10,
+            event_hooks={
+                'request': [before_request, add_time],
+                'response': [after_request],
+            },
+        ) as client:
             for keyword in self.keywords:
                 offset = 0
                 while True:
@@ -60,7 +87,17 @@ class GupyScraper(BaseJobScraper):
                         # Ordenar decrescente para garantir que as vagas mais recentes venham primeiro
                         'sortOrder': 'desc',
                     }
-                    response = await client.get(self.BASE_URL, params=params)
+
+                    try:
+                        response = await client.get('/jobs', params=params)
+                    except httpx.ReadTimeout:
+                        logger.warning(
+                            'Timeout ao buscar vagas para keyword '
+                            f'"{keyword}" com offset {offset}. '
+                            'Pulando para o próximo keyword.'
+                        )
+                        break
+
                     response.raise_for_status()
                     data = response.json()
 
@@ -92,8 +129,6 @@ class GupyScraper(BaseJobScraper):
 
     @staticmethod
     def _clean_description(raw_text: str | None) -> str | None:
-        if not raw_text:
-            return None
 
         # Decodifica entidades HTML (&nbsp; → espaço, &amp; → &, etc.)
         text = html.unescape(raw_text)

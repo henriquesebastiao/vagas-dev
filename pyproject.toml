@@ -9,10 +9,13 @@ dependencies = [
     "apscheduler>=3.11.2",
     "beautifulsoup4>=4.14.3",
     "fastapi[standard]>=0.134.0",
+    "hishel[async]>=1.1.9",
     "httpx>=0.28.1",
+    "httpx-retries>=0.4.6",
     "psycopg[binary]>=3.3.3",
     "pydantic>=2.12.5",
     "pydantic-settings>=2.13.1",
+    "pyrate-limiter>=4.0.2",
     "pytz>=2025.2",
     "sqlalchemy>=2.0.46",
 ]
@@ -24,6 +27,7 @@ dev = [
     "pytest-asyncio>=1.3.0",
     "pytest-cov>=7.0.0",
     "radon>=6.0.1",
+    "respx>=0.22.0",
     "ruff>=0.15.4",
     "taskipy>=1.14.1",
     "testcontainers>=4.14.1",
@@ -69,12 +73,15 @@ addopts = '-p no:warnings'
 asyncio_mode = 'auto'
 
 [tool.coverage.run]
+core = "ctrace"
+concurrency = ["thread", "greenlet"]
 source = ["backend"]
 omit = [
     "*/migrations/*",
     "*/tests/*",
     "database.py",
 ]
+dynamic_context = "test_function"
 
 [tool.coverage.report]
 show_missing = true
@@ -87,7 +94,7 @@ show_contexts = true
 lint = 'uv run ruff check .; uv run ruff check . --diff; uv run radon cc ./backend -a -na'
 format = 'ruff format .; ruff check . --fix'
 run = 'uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4 --app-dir backend'
-dev = 'uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1 --app-dir backend --reload'
+dev = 'uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1 --app-dir backend --reload --log-level debug'
 doc = 'uv run zensical serve --dev-addr localhost:3000 --open'
 test = 'uv run pytest -s -x --cov=backend/app -v; coverage html'
 sync = 'uv sync --all-groups'

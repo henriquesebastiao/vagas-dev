@@ -1,5 +1,9 @@
+import logging
+import time
+import uuid
 from typing import Annotated
 
+import httpx
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -7,6 +11,7 @@ from app.core.database import get_session
 from app.enum import JobLevel
 
 Session = Annotated[AsyncSession, Depends(get_session)]
+_logger = logging.getLogger(__name__)
 
 
 def get_level_seniority(title: str) -> str | None:
@@ -37,3 +42,27 @@ def get_level_seniority(title: str) -> str | None:
         return JobLevel.senior
     else:
         return None
+
+
+async def before_request(request: httpx.Request):
+    request_id = str(uuid.uuid4())
+    request.headers['X-Request-ID'] = request_id
+    request.extensions['request_id'] = request_id
+
+
+async def add_time(request: httpx.Request):
+    request.extensions['start_time'] = time.monotonic()
+
+
+async def after_request(response: httpx.Response):
+    request = response.request
+    start = response.request.extensions.get('start_time', None)
+    if start:
+        elapsed = time.monotonic() - start
+    else:
+        elapsed = None
+
+    _logger.info(
+        f'{request.method} {request.url} {response.status_code}'
+        f'{elapsed} {request.extensions.get("request_id")}'
+    )

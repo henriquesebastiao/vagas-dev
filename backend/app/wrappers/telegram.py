@@ -1,8 +1,10 @@
 import logging
 from http import HTTPStatus
-from time import sleep
 
-from httpx import AsyncClient, Response
+import httpx
+from pyrate_limiter import limiter_factory
+from pyrate_limiter.abstracts.rate import Duration
+from pyrate_limiter.extras.httpx_limiter import AsyncRateLimiterTransport
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.settings import get_settings
@@ -14,6 +16,7 @@ from app.keywords import (
     PYTHON_KEYWORDS,
 )
 from app.models import Job
+from app.utils import add_time, after_request, before_request
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +27,8 @@ class BotTelegram:
 
     async def send_message(
         self, chat_id: str, text: str, topic_id: str | None = None
-    ) -> Response:
-        async with AsyncClient(
+    ) -> httpx.Response | None:
+        async with httpx.AsyncClient(
             base_url=f'https://api.telegram.org/bot{self._token}', timeout=30
         ) as client:
             payload = {
@@ -40,7 +43,15 @@ class BotTelegram:
                 'Enviando mensagem para '
                 f'chat_id={chat_id} com topic_id={topic_id}'
             )
-            response = await client.post('/sendMessage', json=payload)
+
+            try:
+                response = await client.post('/sendMessage', json=payload)
+            except httpx.ReadTimeout:
+                logger.error(
+                    'Timeout ao enviar mensagem para '
+                    f'chat_id={chat_id} com topic_id={topic_id}'
+                )
+                return None
 
             if response.status_code != HTTPStatus.OK:
                 logger.error(
@@ -53,8 +64,31 @@ class BotTelegram:
     async def send_notification_jobs(
         self, jobs: list[dict], chat_id: str, session: AsyncSession
     ) -> bool:
-        async with AsyncClient(
-            base_url=f'https://api.telegram.org/bot{self._token}', timeout=30
+        # retry = Retry(
+        #     total=5,
+        #     backoff_factor=0.5,
+        #     status_forcelist=[429, 500, 502, 503, 504],
+        # )
+        # transport = RetryTransport(retry=retry)
+
+        # Configura um rate limiter para evitar
+        # atingir os limites da API do Telegram.
+        # 20 mensagens por minuto
+        limiter = limiter_factory.create_inmemory_limiter(
+            rate_per_duration=20,
+            duration=Duration.MINUTE,
+        )
+
+        limiter_transport = AsyncRateLimiterTransport(limiter=limiter)
+
+        async with httpx.AsyncClient(
+            base_url=f'https://api.telegram.org/bot{self._token}',
+            transport=limiter_transport,
+            timeout=10,
+            event_hooks={
+                'request': [before_request, add_time],
+                'response': [after_request],
+            },
         ) as client:
             logger.info(
                 'Enviando notificações de vagas para '
@@ -91,7 +125,15 @@ class BotTelegram:
                     # Adiciona o ID do tópico ao json da requisição POST
                     payload['message_thread_id'] = topic_id
 
-                response = await client.post('/sendMessage', json=payload)
+                try:
+                    response = await client.post('/sendMessage', json=payload)
+                except httpx.ReadTimeout:
+                    logger.error(
+                        'Timeout ao enviar mensagem para '
+                        f'chat_id={chat_id} com topic_id={topic_id}'
+                    )
+
+                    continue
 
                 if response.status_code != HTTPStatus.OK:
                     logger.error(
@@ -104,8 +146,4 @@ class BotTelegram:
                     job_db = await session.get(Job, job['id'])
                     job_db.telegram_notified = True
                     await session.commit()
-
-                # Para evitar atingir o rate limit da API do Telegram,
-                # adicionamos um delay entre as mensagens
-                sleep(35)
             return True
