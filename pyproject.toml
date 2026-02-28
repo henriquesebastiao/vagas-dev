@@ -1,7 +1,7 @@
 [project]
 name = "vagas-dev"
 version = "0.1.0"
-description = "Add your description here"
+description = "API para busca de vagas de emprego para desenvolvedores e notificações de novas vagas."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
