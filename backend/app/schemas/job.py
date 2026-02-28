@@ -25,7 +25,7 @@ class JobOut(BaseModel):
         end_applications: Data de encerramento das candidaturas ou None
             se não disponível
         found_at: Data em que a vaga foi encontrada e salva no banco de dados
-        notified: Indica se o usuário já foi notificado sobre esta vaga
+        telegram_notified: Indica se o usuário já foi notificado sobre esta vaga
         for_pcd: Indica se a vaga é para Pessoas com Deficiência (PCD)
     """
 
@@ -42,7 +42,7 @@ class JobOut(BaseModel):
     published_at: datetime | None
     end_applications: datetime | None
     found_at: datetime
-    notified: bool
+    telegram_notified: bool
     for_pcd: bool = False
     level: JobLevel | None
 

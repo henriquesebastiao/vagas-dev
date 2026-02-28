@@ -4,7 +4,7 @@ from pytz import utc
 from sqlalchemy import DateTime, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, registry
 
-from app.enum import JobLevel, JobSource, WorkplaceType
+from .enum import JobLevel, JobSource, WorkplaceType
 
 table_registry = registry()
 
@@ -38,7 +38,7 @@ class Job:
         init=False,
         server_default=func.now(tz=utc),
     )
-    notified: Mapped[bool] = mapped_column(
+    telegram_notified: Mapped[bool] = mapped_column(
         init=False, default=False, server_default='false'
     )
     for_pcd: Mapped[bool] = mapped_column(

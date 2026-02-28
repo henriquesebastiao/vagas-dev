@@ -1,7 +1,9 @@
 import logging
 from http import HTTPStatus
+from time import sleep
 
 from httpx import AsyncClient, Response
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.settings import get_settings
 from app.keywords import (
@@ -11,6 +13,7 @@ from app.keywords import (
     JAVA_KEYWORDS,
     PYTHON_KEYWORDS,
 )
+from app.models import Job
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +51,7 @@ class BotTelegram:
             return response
 
     async def send_notification_jobs(
-        self, jobs: list[dict], chat_id: str
+        self, jobs: list[dict], chat_id: str, session: AsyncSession
     ) -> bool:
         async with AsyncClient(
             base_url=f'https://api.telegram.org/bot{self._token}', timeout=30
@@ -95,4 +98,14 @@ class BotTelegram:
                         'Erro ao enviar mensagem: '
                         f'{response.status_code} - {response.text}'
                     )
+                else:
+                    # Marca a vaga como notificada
+                    # no banco de dados para evitar
+                    job_db = await session.get(Job, job['id'])
+                    job_db.telegram_notified = True
+                    await session.commit()
+
+                # Para evitar atingir o rate limit da API do Telegram,
+                # adicionamos um delay entre as mensagens
+                sleep(35)
             return True

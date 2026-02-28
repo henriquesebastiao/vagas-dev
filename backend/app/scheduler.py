@@ -1,14 +1,11 @@
 import logging
-from dataclasses import asdict
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-from sqlalchemy import select
 
 from app.core.database import AsyncSessionLocal
 from app.core.settings import get_settings
 from app.keywords import KEYWORDS
-from app.models import Job
 from app.notifiers import notify_new_jobs
 from app.scrapers.gupy import GupyScraper
 
@@ -30,28 +27,8 @@ async def run_gupy_sync():
 
 
 async def run_notify_new_jobs():
-    logger.info('Iniciando notificação de novas vagas...')
-
-    async with AsyncSessionLocal() as session:
-        # Obtém as vagas que ainda não foram notificadas para os canais
-        jobs = await session.scalars(select(Job).where(Job.notified == False))
-        jobs = jobs.all()
-
-        list_jobs = []
-
-        for job in jobs:
-            # Adicionado a vaga como um dicionário a lista
-            list_jobs.append(asdict(job))
-
-            # Atualiza registro no banco de dados
-            # registrando que as vagas foram enviadas pera o canais
-            # job.notified = True
-            # session.add(job)
-            # await session.commit()
-            # TODO
-
-        # Envia notificações das vagas para todos os canais
-        await notify_new_jobs(list_jobs)
+    """Aciona o processo de notificação para novas vagas."""
+    await notify_new_jobs()
 
 
 def setup_scheduler():
