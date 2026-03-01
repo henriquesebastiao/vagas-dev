@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     TELEGRAM_GOLANG_TOPIC_ID: str = '6'
     TELEGRAM_FRONTEND_TOPIC_ID: str = '8'
     TELEGRAM_BACKEND_TOPIC_ID: str = '7'
+    TELEGRAM_MAX_MESSAGE_LENGTH: int = 4096
 
 
 @lru_cache

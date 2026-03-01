@@ -87,6 +87,10 @@ class BotTelegram:
                 'Enviando notificações de vagas para '
                 f'chat_id={chat_id} - Total vagas: {len(jobs)}'
             )
+
+            if len(jobs) == 0:
+                logger.info('Nenhuma vaga nova para notificar.')
+
             for job in jobs:
                 keyword = job['keyword']
                 topic_id = None
@@ -105,9 +109,26 @@ class BotTelegram:
                 elif keyword in BACKEND_KEYWORDS:
                     topic_id = settings.TELEGRAM_BACKEND_TOPIC_ID
 
+                description = job['description']
+
                 message = f"""{job['title']}\nEmpresa: {job['company']}
 \nLocal: {job['location']}\nModelo: {job['workplace_type']}
-\n{job['description']}\n\nLink: {job['url']}"""
+\n{description}\n\nLink: {job['url']}"""
+
+                # Verifica se a mensagem excede o limite de
+                # caracteres do Telegram (4096 caracteres)
+                length_message = len(message)
+                if length_message > settings.TELEGRAM_MAX_MESSAGE_LENGTH:
+                    exceeded = (
+                        length_message - settings.TELEGRAM_MAX_MESSAGE_LENGTH
+                    )
+                    description = (
+                        description[: len(description) - exceeded - 3] + '...'
+                    )
+
+                    message = f"""{job['title']}\nEmpresa: {job['company']}
+\nLocal: {job['location']}\nModelo: {job['workplace_type']}
+\n{description}\n\nLink: {job['url']}"""
 
                 payload = {
                     'chat_id': chat_id,
