@@ -30,11 +30,11 @@ class JobOut(BaseModel):
     """
 
     id: int
-    external_id: str
+    external_id: str | None
     keyword: str
     source: JobSource
     title: str
-    company: str
+    company: str | None
     location: str | None
     url: str
     description: str | None

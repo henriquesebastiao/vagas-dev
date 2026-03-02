@@ -13,7 +13,6 @@ table_registry = registry()
 class Job:
     __tablename__ = 'jobs'
     id: Mapped[int] = mapped_column(primary_key=True, init=False)
-    external_id: Mapped[str] = mapped_column(String(255))
     keyword: Mapped[str | None] = mapped_column(
         String(255), server_default=None
     )
@@ -21,18 +20,25 @@ class Job:
         String(50)
     )  # "gupy", "linkedin", etc.
     title: Mapped[str] = mapped_column(String(500))
-    company: Mapped[str] = mapped_column(String(255))
     location: Mapped[str | None] = mapped_column(String(255), nullable=True)
     url: Mapped[str] = mapped_column(String(1000))
-    description: Mapped[str | None] = mapped_column(Text, nullable=True)
     workplace_type: Mapped[WorkplaceType | None] = mapped_column(
         String(7), nullable=True
     )  # remote, hybrid, on-site
-    published_at: Mapped[datetime | None] = mapped_column(
-        DateTime, nullable=True
-    )
     end_applications: Mapped[datetime | None] = mapped_column(
-        DateTime, nullable=True
+        DateTime, nullable=True, server_default=None, default=None
+    )
+    published_at: Mapped[datetime | None] = mapped_column(
+        DateTime, nullable=True, server_default=None, default=None
+    )
+    company: Mapped[str | None] = mapped_column(
+        String(255), nullable=True, server_default=None, default=None
+    )
+    description: Mapped[str | None] = mapped_column(
+        Text, nullable=True, server_default=None, default=None
+    )
+    external_id: Mapped[str | None] = mapped_column(
+        String(255), nullable=True, server_default=None, default=None
     )
     found_at: Mapped[datetime] = mapped_column(
         init=False,

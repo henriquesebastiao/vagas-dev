@@ -2,12 +2,9 @@ import html
 import logging
 import re
 
-import hishel
-import hishel.httpx
 import httpx
-from httpx_retries import Retry, RetryTransport
 
-from app.keywords import KEYWORDS
+from app.scrapers import transport
 from app.scrapers.base import BaseJobScraper
 from app.utils import (
     add_time,
@@ -31,17 +28,8 @@ class GupyScraper(BaseJobScraper):
     source_name = 'gupy'
     BASE_URL = 'https://employability-portal.gupy.io/api/v1'
 
-    def __init__(self, keywords: list[str] = None, limit: int = 100):
-        """Monta o scraper com os parâmetros de busca.
-
-        Args:
-            keywords (list): termos de busca.
-                Cada keyword gera uma sequência independente de requests
-            limit (int): vagas por página — use o máximo permitido pela API
-                para minimizar requests
-        """
-        self.keywords = keywords or KEYWORDS
-        self.limit = limit
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     async def fetch_jobs(self) -> list[dict]:
         """Coleta todas as vagas para cada keyword configurado.
@@ -51,20 +39,10 @@ class GupyScraper(BaseJobScraper):
         pois a mesma vaga pode aparecer em buscas por keywords diferentes.
         """
         logger.info(
-            f'Iniciando coleta de vagas da Gupy para keywords: {self.keywords}'
+            f'Iniciando coleta de vagas da fonte {self.source_name.title()} '
+            f'para keywords: {self.keywords}'
         )
         all_jobs = []
-
-        # Configura retry para lidar com falhas temporárias da API (ex: 500, 502, etc.)
-        retry = Retry(total=5, backoff_factor=0.5)
-        transport = httpx.AsyncHTTPTransport(verify=False)
-        retry_transport = RetryTransport(transport, retry=retry)
-
-        # Cache HTTP para evitar buscar os dados quando não houver mudanças
-        transport = hishel.httpx.AsyncCacheTransport(
-            next_transport=retry_transport,
-            storage=hishel.AsyncSqliteStorage(),
-        )
 
         async with httpx.AsyncClient(
             base_url=self.BASE_URL,

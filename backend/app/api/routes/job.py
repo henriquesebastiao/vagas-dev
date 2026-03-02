@@ -8,7 +8,7 @@ from app.enum import JobLevel, JobSource, Keyword, WorkplaceType
 from app.models import Job
 from app.schemas import Message
 from app.schemas.job import JobOut, SourceOut
-from app.scrapers.gupy import GupyScraper
+from app.scrapers import gupy, linkedin
 from app.utils import Session
 
 logger = logging.getLogger(__name__)
@@ -75,7 +75,7 @@ async def trigger_sync(
 ):
     """Dispara uma sincronização manual via endpoint."""
     logger.info(f'Iniciando sync manual para fonte: {source}')
-    scrapers = {'gupy': GupyScraper}
+    scrapers = {'gupy': gupy.GupyScraper, 'linkedin': linkedin.LinkedInScraper}
 
     if source not in scrapers:
         raise HTTPException(

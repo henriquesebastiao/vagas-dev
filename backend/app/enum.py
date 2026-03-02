@@ -3,6 +3,7 @@ from enum import Enum
 
 class JobSource(str, Enum):
     gupy = 'gupy'
+    linkedin = 'linkedin'
 
 
 class JobLevel(str, Enum):

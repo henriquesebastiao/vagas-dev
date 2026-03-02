@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.keywords import KEYWORDS
 from app.models import Job
 
 logger = logging.getLogger(__name__)
@@ -20,6 +21,19 @@ class BaseJobScraper(ABC):
 
     # Identificador da fonte, ex: "gupy". Deve ser definido na subclasse.
     source_name: str
+    BASE_URL: str
+
+    def __init__(self, keywords: list[str] = None, limit: int = 100):
+        """Monta o scraper com os parâmetros de busca.
+
+        Args:
+            keywords (list): termos de busca.
+                Cada keyword gera uma sequência independente de requests
+            limit (int): vagas por página (se a fonte usar paginação).
+                O valor padrão é 100
+        """
+        self.keywords = keywords or KEYWORDS
+        self.limit = limit
 
     @abstractmethod
     async def fetch_jobs(self) -> list[dict]:

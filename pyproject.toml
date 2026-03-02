@@ -73,6 +73,7 @@ quote-style = 'single'
 '**/tests/**/*.py' = ['E501']
 'main.py' = ['E501']
 '**/schemas/*.py' = ['E501']
+'linkedin.py' = ['PLR1702']
 
 [tool.pytest.ini_options]
 addopts = '-p no:warnings'
