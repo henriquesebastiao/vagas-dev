@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix='/jobs', tags=['jobs'])
 
 
-@router.get('/', response_model=list[JobOut])
+@router.get('', response_model=list[JobOut])
 async def list_jobs(
     session: Session,
     source: Annotated[JobSource | None, Query()] = None,
