@@ -12,6 +12,10 @@ services:
             - .venv
         - path: ./requirements.txt
           action: rebuild
+  ui:
+    restart: no
+    ports:
+      - "3000:3000"
   database:
     restart: no
     ports:

@@ -11,6 +11,19 @@ services:
     depends_on:
       database:
         condition: service_healthy
+  ui:
+    container_name: vagas-ui
+    image: 'vagas-ui:${TAG-latest}'
+    restart: always
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    depends_on:
+      - app
+    environment:
+      - NEXT_PUBLIC_API_URL=http://vagas-app:8000
+    ports:
+      - "3000:3000"
   database:
     container_name: vagas-db
     image: postgres:18.3-alpine@sha256:4da1a4828be12604092fa55311276f08f9224a74a62dcb4708bd7439e2a03911
@@ -40,5 +53,6 @@ services:
       - NGINX_PORT=80
     depends_on:
       - app
+      - ui
 volumes:
   pgdata:

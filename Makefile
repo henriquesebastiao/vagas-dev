@@ -2,6 +2,7 @@ lint:
 	yamlfmt -lint .
 	mbake format --check Makefile
 	prettier --check frontend/.
+	npm run lint --prefix frontend
 	uv run ruff check .; uv run ruff check . --diff
 
 format:
