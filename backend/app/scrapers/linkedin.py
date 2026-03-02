@@ -24,7 +24,7 @@ linkedin_level_id = {
 linkedin_workplace_type_id = {
     'remote': 2,
     'hybrid': 3,
-    'on_site': 1,
+    'on-site': 1,
 }
 
 
