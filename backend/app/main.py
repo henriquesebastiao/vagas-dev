@@ -3,6 +3,7 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app import __version__
 from app.api.routes import job
@@ -59,6 +60,13 @@ app = FastAPI(
     },
 )
 app.include_router(job.router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['http://localhost:3000'],  # endereço do Next.js
+    allow_methods=['*'],
+    allow_headers=['*'],
+)
 
 
 @app.get('/health', response_model=HealthOut)
