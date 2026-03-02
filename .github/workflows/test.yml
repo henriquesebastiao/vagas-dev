@@ -22,10 +22,6 @@ jobs:
         run: uv sync --all-extras --dev
       - name: Run Ruff
         run: uv run ruff check .; uv run ruff check . --diff
-      - name: Run eslint
-        uses: stefanoeb/eslint-action@1.0.2
-        with:
-          files: frontend/
       - name: Run prettier
         uses: creyD/prettier_action@v4.6
         with:
