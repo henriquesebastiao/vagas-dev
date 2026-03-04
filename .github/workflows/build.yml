@@ -38,8 +38,8 @@ jobs:
           tags: |
             henriquesebastiao/vagas-dev-api:latest
             henriquesebastiao/vagas-dev-api:${{ steps.version.outputs.VERSION }}
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ steps.version.outputs.VERSION }}
+            ghcr.io/${{ github.repository }}/api:latest
+            ghcr.io/${{ github.repository }}/api:${{ steps.version.outputs.VERSION }}
           platforms: linux/amd64,linux/arm64
           build-args: |
             DOCKER_METADATA_OUTPUT_JSON
@@ -53,8 +53,8 @@ jobs:
           tags: |
             henriquesebastiao/vagas-dev-ui:latest
             henriquesebastiao/vagas-dev-ui:${{ steps.version.outputs.VERSION }}
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ steps.version.outputs.VERSION }}
+            ghcr.io/${{ github.repository }}/ui:latest
+            ghcr.io/${{ github.repository }}/ui:${{ steps.version.outputs.VERSION }}
           platforms: linux/amd64,linux/arm64
           build-args: |-
             DOCKER_METADATA_OUTPUT_JSON
