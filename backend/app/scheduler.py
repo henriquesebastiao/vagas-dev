@@ -75,12 +75,5 @@ def setup_scheduler():
         misfire_grace_time=60,
     )
 
-    # Exemplo com cron: todo dia às 8h e 18h
-    # scheduler.add_job(
-    #     run_gupy_sync,
-    #     trigger=CronTrigger(hour="8,18", minute=0),
-    #     id="gupy_sync_cron",
-    # )
-
     scheduler.start()
     logger.info('Scheduler iniciado.')

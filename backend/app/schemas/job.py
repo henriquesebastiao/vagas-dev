@@ -43,6 +43,7 @@ class JobOut(BaseModel):
     end_applications: datetime | None
     found_at: datetime
     telegram_notified: bool
+    discord_notified: bool
     for_pcd: bool = False
     level: JobLevel | None
 

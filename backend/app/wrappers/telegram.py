@@ -83,18 +83,19 @@ class BotTelegram:
                 'response': [after_request],
             },
         ) as client:
+            settings = get_settings()
+
             logger.info(
-                'Enviando notificações de vagas para '
+                '[Telegram] Enviando notificações de vagas para '
                 f'chat_id={chat_id} - Total vagas: {len(jobs)}'
             )
 
-            if len(jobs) == 0:
-                logger.info('Nenhuma vaga nova para notificar.')
+            if not jobs:
+                logger.info('[Telegram] Nenhuma vaga nova para notificar.')
 
             for job in jobs:
-                keyword = job['keyword']
+                keyword = job['keyword']  # noqa
                 topic_id = None
-                settings = get_settings()
 
                 # Define qual o tópico correto para enviar
                 # a vaga com base na sua palavra-chave
@@ -143,7 +144,7 @@ class BotTelegram:
                     response = await client.post('/sendMessage', json=payload)
                 except httpx.ReadTimeout:
                     logger.error(
-                        'Timeout ao enviar mensagem para '
+                        '[Telegram] Timeout ao enviar mensagem para '
                         f'chat_id={chat_id} com topic_id={topic_id}'
                     )
 
@@ -151,7 +152,7 @@ class BotTelegram:
 
                 if response.status_code != HTTPStatus.OK:
                     logger.error(
-                        'Erro ao enviar mensagem: '
+                        '[Telegram] Erro ao enviar mensagem: '
                         f'{response.status_code} - {response.text}'
                     )
                 else:
