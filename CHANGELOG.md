@@ -1,3 +1,10 @@
+## [0.1.0-beta.3](https://github.com/henriquesebastiao/vagas-dev/releases/0.1.0-beta.3) - 2026-03-04
+
+### Core
+
+- Atualizando dependências da API
+
+
 ## [0.1.0-beta.2](https://github.com/henriquesebastiao/vagas-dev/releases/0.1.0-beta.2) - 2026-03-04
 
 ### Correção de Bug
