@@ -29,7 +29,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push api image
-        id: push
+        id: push-api
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -44,7 +44,7 @@ jobs:
           build-args: |
             DOCKER_METADATA_OUTPUT_JSON
       - name: Build and push ui image
-        id: push
+        id: push-ui
         uses: docker/build-push-action@v6
         with:
           context: .
