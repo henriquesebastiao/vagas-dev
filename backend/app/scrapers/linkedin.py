@@ -58,7 +58,7 @@ class LinkedInScraper(BaseJobScraper):
                         workplace_type_id,
                     ) in linkedin_workplace_type_id.items():
                         params = {
-                            'keywords': keyword,
+                            'keywords': f'"{keyword}"',
                             'f_E': level_id,
                             'f_WT': workplace_type_id,
                             'location': 'Brasil',

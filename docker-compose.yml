@@ -41,7 +41,7 @@ services:
       start_period: 30s
       timeout: 10s
   web:
-    container_name: web-manejo
+    container_name: vagas-dev-web
     image: nginx:1.29.5-alpine@sha256:1d13701a5f9f3fb01aaa88cef2344d65b6b5bf6b7d9fa4cf0dca557a8d7702ba
     restart: always
     volumes:

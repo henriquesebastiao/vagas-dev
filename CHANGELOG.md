@@ -1,3 +1,10 @@
+## [0.1.0-beta.5](https://github.com/henriquesebastiao/vagas-dev/releases/0.1.0-beta.5) - 2026-03-04
+
+### Funcionalidade
+
+- Buscando vagas mais acertivamente no linkedin usando filtros ([#16](https://github.com/henriquesebastiao/vagas-dev/issues/16))
+
+
 ## [0.1.0-beta.4](https://github.com/henriquesebastiao/vagas-dev/releases/0.1.0-beta.4) - 2026-03-04
 
 ### Correção de Bug
