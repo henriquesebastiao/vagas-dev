@@ -36,4 +36,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ./out --project-name=vagas-dev-ui --branch=main
+          command: pages deploy ./frontend/out --project-name=vagas-dev-ui --branch=main
