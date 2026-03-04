@@ -12,7 +12,7 @@ jobs:
           fetch-depth: 0
       - name: Extract version from git tags
         id: version
-        run: echo "VERSION=$(git describe --tags --always | cut -d'-' -f1)" >> "$GITHUB_OUTPUT"
+        run: echo "VERSION=$(git describe --tags --always)" >> "$GITHUB_OUTPUT"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx

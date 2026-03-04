@@ -1,3 +1,10 @@
+## [0.1.0-beta.4](https://github.com/henriquesebastiao/vagas-dev/releases/0.1.0-beta.4) - 2026-03-04
+
+### Correção de Bug
+
+- Corrigindo versão das imagens docker
+
+
 ## [0.1.0-beta.3](https://github.com/henriquesebastiao/vagas-dev/releases/0.1.0-beta.3) - 2026-03-04
 
 ### Core
