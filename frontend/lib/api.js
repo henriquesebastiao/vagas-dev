@@ -1,6 +1,3 @@
-// Todas as funções que conversam com sua FastAPI ficam aqui.
-// Assim, se a URL da API mudar, você só muda neste arquivo.
-
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 /**

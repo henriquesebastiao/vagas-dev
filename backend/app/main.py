@@ -67,7 +67,8 @@ app.include_router(job.router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['http://localhost:3000'],  # endereço do Next.js
+    allow_origins=['*'],
+    allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*'],
 )

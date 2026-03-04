@@ -57,6 +57,7 @@ Copyright &copy; 2026 Henrique Sebastião
  nav = [
      {"Início" = [
          {"Início" = "index.md"},
+         {"Execute" = "do-it-yourself.md"},
          {"Roadmap" = "roadmap.md"},
          {"Licença" = "license.md"},
          {"Changelog" = "changelog.md"},
