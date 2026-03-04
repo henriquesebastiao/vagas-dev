@@ -1,3 +1,10 @@
+## [0.1.0-beta.2](https://github.com/henriquesebastiao/vagas-dev/releases/0.1.0-beta.2) - 2026-03-04
+
+### Correção de Bug
+
+- Corrigindo arquivo de CI de build das imagens Docker
+
+
 ## [0.1.0-beta](https://github.com/henriquesebastiao/vagas-dev/releases/0.1.0-beta) - 2026-03-03
 
 ### Funcionalidade
