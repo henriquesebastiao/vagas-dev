@@ -1,3 +1,10 @@
+## [0.1.1](https://github.com/henriquesebastiao/vagas-dev/releases/0.1.1) - 2026-03-04
+
+### Funcionalidade
+
+- Alterando tempo de intervalo entre buscas de vagas para 60 minutos
+
+
 ## [0.1.0](https://github.com/henriquesebastiao/vagas-dev/releases/0.1.0) - 2026-03-04
 
 ### Core
