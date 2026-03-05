@@ -2,7 +2,22 @@
 icon: lucide/rocket
 ---
 
-# Vagas de Trabalho para DEVs
+<h1 align="center">
+  <a href="#">
+    <picture>
+      <img width="599" height="337" alt="Vagas Dev Banner" src="https://github.com/user-attachments/assets/958395bc-3201-4f6f-ba3b-0bf897624f48" />
+    </picture>
+  </a>
+</h1>
+<p align="center"><i>Buscador de vagas de trabalho para desenvolvedores no Brasil</i></p>
+
+<div align="center">
+  <img alt="Test" src="https://github.com/henriquesebastiao/vagas-dev/actions/workflows/test.yml/badge.svg">
+  <img alt="Build" src="https://github.com/henriquesebastiao/vagas-dev/actions/workflows/deploy.yml/badge.svg">
+  <img alt="GitHub Release" src="https://img.shields.io/github/v/release/henriquesebastiao/vagas-dev?color=blue">
+  <img alt="Visitors" src="https://api.visitorbadge.io/api/visitors?path=henriquesebastiao%2Fvagas-dev&label=repository%20visits&countColor=%231182c3&style=flat">
+</div>
+
 
 Num cenário onde as vagas de trabalho em desenvolvimento de software estão cada vez mais dispersas entre diversas
 plataformas e sites, este projeto surge como uma solução para centralizar a busca por oportunidades na área de tecnologia.
