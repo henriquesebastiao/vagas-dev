@@ -4,13 +4,11 @@
 import { useState, useEffect } from "react";
 import { LEVEL_CONFIG, WORKPLACE_CONFIG } from "@/lib/constants";
 
-// Aguarda o usuário parar de digitar por `delay` ms antes de chamar a função.
-// Evita uma requisição para cada letra digitada.
 function useDebounce(value, delay = 400) {
   const [debounced, setDebounced] = useState(value);
   useEffect(() => {
     const timer = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(timer); // cancela o timer se o valor mudar antes do delay
+    return () => clearTimeout(timer);
   }, [value, delay]);
   return debounced;
 }
@@ -42,7 +40,7 @@ function FilterSelect({ label, value, onChange, options }) {
           cursor: "pointer",
           outline: "none",
           appearance: "none",
-          minWidth: 130,
+          width: "100%",
         }}
       >
         <option value="">Todos</option>
@@ -56,23 +54,126 @@ function FilterSelect({ label, value, onChange, options }) {
   );
 }
 
-export default function Filters({ onChange, onSync, totalJobs }) {
+function FilterInput({ label, placeholder, value, onChange }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+      <label
+        style={{
+          fontSize: 11,
+          fontWeight: 600,
+          color: "#64748b",
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+        }}
+      >
+        {label}
+      </label>
+      <input
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          width: "100%",
+          boxSizing: "border-box",
+          background: "rgba(255,255,255,0.05)",
+          border: "1px solid rgba(255,255,255,0.1)",
+          borderRadius: 9,
+          padding: "8px 12px",
+          color: "#f1f5f9",
+          fontSize: 13,
+          outline: "none",
+        }}
+      />
+    </div>
+  );
+}
+
+function FilterToggle({ label, value, onChange }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 5,
+        justifyContent: "flex-end",
+      }}
+    >
+      <label
+        style={{
+          fontSize: 11,
+          fontWeight: 600,
+          color: "#64748b",
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+        }}
+      >
+        {label}
+      </label>
+      <button
+        onClick={() => onChange(!value)}
+        style={{
+          background: value
+            ? "rgba(251,191,36,0.15)"
+            : "rgba(255,255,255,0.05)",
+          border: value
+            ? "1px solid rgba(251,191,36,0.4)"
+            : "1px solid rgba(255,255,255,0.1)",
+          borderRadius: 9,
+          padding: "8px 12px",
+          color: value ? "#fbbf24" : "#64748b",
+          fontSize: 13,
+          fontWeight: 600,
+          cursor: "pointer",
+          transition: "all 0.18s",
+          textAlign: "left",
+          whiteSpace: "nowrap",
+        }}
+      >
+        ♿ {value ? "Somente PCD" : "Qualquer"}
+      </button>
+    </div>
+  );
+}
+
+// Controla se os filtros avançados estão expandidos
+export default function Filters({ onChange, onSync, totalJobs, sources = [] }) {
   const [keyword, setKeyword] = useState("");
   const [level, setLevel] = useState("");
   const [workplaceType, setWorkplaceType] = useState("");
+  const [source, setSource] = useState("");
+  const [company, setCompany] = useState("");
+  const [location, setLocation] = useState("");
+  const [forPcd, setForPcd] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [syncing, setSyncing] = useState(false);
 
-  // Aplica debounce na keyword para não buscar a cada tecla
   const debouncedKeyword = useDebounce(keyword);
+  const debouncedCompany = useDebounce(company);
+  const debouncedLocation = useDebounce(location);
 
-  // Sempre que qualquer filtro mudar, avisa o componente pai (page.js)
+  const hasActiveFilters =
+    level || workplaceType || source || company || location || forPcd;
+
   useEffect(() => {
     onChange({
       keyword: debouncedKeyword,
       level,
       workplace_type: workplaceType,
+      source,
+      company: debouncedCompany,
+      location: debouncedLocation,
+      for_pcd: forPcd || undefined,
     });
-  }, [debouncedKeyword, level, workplaceType, onChange]);
+  }, [
+    debouncedKeyword,
+    level,
+    workplaceType,
+    source,
+    debouncedCompany,
+    debouncedLocation,
+    forPcd,
+    onChange,
+  ]);
 
   async function handleSync() {
     setSyncing(true);
@@ -81,6 +182,16 @@ export default function Filters({ onChange, onSync, totalJobs }) {
     } finally {
       setTimeout(() => setSyncing(false), 2000);
     }
+  }
+
+  function clearFilters() {
+    setKeyword("");
+    setLevel("");
+    setWorkplaceType("");
+    setSource("");
+    setCompany("");
+    setLocation("");
+    setForPcd(false);
   }
 
   return (
@@ -118,7 +229,7 @@ export default function Filters({ onChange, onSync, totalJobs }) {
         </button>
       </div>
 
-      {/* Campo de busca */}
+      {/* Campo de busca principal */}
       <div
         style={{
           padding: "14px 20px 10px",
@@ -139,7 +250,7 @@ export default function Filters({ onChange, onSync, totalJobs }) {
             🔍
           </span>
           <input
-            placeholder="Buscar por título, empresa..."
+            placeholder="Buscar por título..."
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             style={{
@@ -157,13 +268,13 @@ export default function Filters({ onChange, onSync, totalJobs }) {
         </div>
       </div>
 
-      {/* Filtros de select */}
+      {/* Filtros principais: Nível + Modalidade */}
       <div
         style={{
-          padding: "12px 20px 16px",
-          display: "flex",
-          gap: 12,
-          flexWrap: "wrap",
+          padding: "12px 20px 0",
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 10,
         }}
       >
         <FilterSelect
@@ -185,6 +296,122 @@ export default function Filters({ onChange, onSync, totalJobs }) {
           }))}
         />
       </div>
+
+      {/* Botão para expandir filtros avançados */}
+      <div style={{ padding: "10px 20px 0" }}>
+        <button
+          onClick={() => setExpanded((v) => !v)}
+          style={{
+            background: "none",
+            border: "none",
+            color: hasActiveFilters ? "#818cf8" : "#475569",
+            fontSize: 12,
+            fontWeight: 600,
+            cursor: "pointer",
+            padding: "4px 0",
+            display: "flex",
+            alignItems: "center",
+            gap: 5,
+            letterSpacing: "0.03em",
+          }}
+        >
+          <span
+            style={{
+              display: "inline-block",
+              transition: "transform 0.2s",
+              transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
+            }}
+          >
+            ▾
+          </span>
+          Filtros avançados
+          {hasActiveFilters && (
+            <span
+              style={{
+                background: "rgba(99,102,241,0.25)",
+                color: "#818cf8",
+                borderRadius: 10,
+                padding: "1px 7px",
+                fontSize: 10,
+                fontWeight: 700,
+              }}
+            >
+              ativos
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Painel de filtros avançados */}
+      {expanded && (
+        <div
+          style={{
+            padding: "12px 20px 16px",
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
+            borderTop: "1px solid rgba(255,255,255,0.04)",
+            marginTop: 8,
+          }}
+        >
+          {/* Fonte */}
+          <FilterSelect
+            label="Fonte"
+            value={source}
+            onChange={setSource}
+            options={sources.map((s) => ({
+              value: s.source,
+              label: `${s.source} (${s.count})`,
+            }))}
+          />
+
+          {/* Empresa */}
+          <FilterInput
+            label="Empresa"
+            placeholder="Ex: Nubank, iFood..."
+            value={company}
+            onChange={setCompany}
+          />
+
+          {/* Localização */}
+          <FilterInput
+            label="Localização"
+            placeholder="Ex: São Paulo, Remoto..."
+            value={location}
+            onChange={setLocation}
+          />
+
+          {/* PCD */}
+          <FilterToggle
+            label="Acessibilidade"
+            value={forPcd}
+            onChange={setForPcd}
+          />
+
+          {/* Limpar filtros */}
+          {hasActiveFilters && (
+            <button
+              onClick={clearFilters}
+              style={{
+                background: "rgba(239,68,68,0.08)",
+                border: "1px solid rgba(239,68,68,0.2)",
+                borderRadius: 9,
+                color: "#f87171",
+                fontSize: 12,
+                fontWeight: 600,
+                padding: "8px 12px",
+                cursor: "pointer",
+                marginTop: 2,
+              }}
+            >
+              ✕ Limpar filtros avançados
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Espaçamento inferior */}
+      <div style={{ height: expanded ? 0 : 14 }} />
     </div>
   );
 }

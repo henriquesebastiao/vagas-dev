@@ -11,8 +11,10 @@ export async function fetchJobs(filters = {}) {
   if (filters.level) params.set("level", filters.level);
   if (filters.workplace_type)
     params.set("workplace_type", filters.workplace_type);
-  if (filters.location) params.set("location", filters.location);
   if (filters.source) params.set("source", filters.source);
+  if (filters.company) params.set("company", filters.company);
+  if (filters.location) params.set("location", filters.location);
+  if (filters.for_pcd) params.set("for_pcd", "true");
 
   params.set("limit", filters.limit || 50);
   params.set("offset", filters.offset || 0);
@@ -24,7 +26,7 @@ export async function fetchJobs(filters = {}) {
 
 /**
  * Busca as fontes disponíveis e a contagem de vagas de cada uma.
- * Usado para exibir os stats no header.
+ * Usado para exibir os stats no header e popular o filtro de fonte.
  */
 export async function fetchSources() {
   const res = await fetch(`${BASE_URL}/jobs/sources`);

@@ -1,5 +1,5 @@
 // Painel direito que exibe os detalhes completos da vaga selecionada.
-// Quando nenhuma vaga está selecionada, exibe um estado vazio.
+// Quando nenhuma vaga está selecionada, exibe informações sobre o sistema.
 
 import {
   LEVEL_CONFIG,
@@ -7,6 +7,8 @@ import {
   Badge,
   timeAgo,
 } from "@/lib/constants";
+
+import { BriefcaseBusiness } from "lucide-react";
 
 function InfoCard({ icon, label, value }) {
   return (
@@ -37,35 +39,240 @@ function InfoCard({ icon, label, value }) {
   );
 }
 
-function EmptyState() {
+function LinkCard({ icon, label, description, href }) {
   return (
-    <div
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
       style={{
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
-        height: "100%",
-        color: "#334155",
-        gap: 12,
+        gap: 14,
+        background: "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(255,255,255,0.07)",
+        borderRadius: 12,
+        padding: "14px 18px",
+        textDecoration: "none",
+        transition: "all 0.18s",
+        cursor: "pointer",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = "rgba(99,102,241,0.08)";
+        e.currentTarget.style.borderColor = "rgba(99,102,241,0.3)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = "rgba(255,255,255,0.03)";
+        e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
       }}
     >
-      <div style={{ fontSize: 48 }}>💼</div>
-      <div style={{ fontSize: 16, fontWeight: 600 }}>Selecione uma vaga</div>
-      <div style={{ fontSize: 13 }}>
-        Clique em uma vaga à esquerda para ver os detalhes
+      <span style={{ fontSize: 22 }}>{icon}</span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            fontSize: 14,
+            fontWeight: 700,
+            color: "#e2e8f0",
+            marginBottom: 2,
+          }}
+        >
+          {label}
+        </div>
+        <div style={{ fontSize: 12, color: "#64748b" }}>{description}</div>
+      </div>
+      <span style={{ color: "#475569", fontSize: 14 }}>↗</span>
+    </a>
+  );
+}
+
+function FeatureItem({ icon, text }) {
+  return (
+    <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+      <span
+        style={{
+          fontSize: 15,
+          marginTop: 1,
+          flexShrink: 0,
+        }}
+      >
+        {icon}
+      </span>
+      <span style={{ fontSize: 13.5, color: "#94a3b8", lineHeight: 1.6 }}>
+        {text}
+      </span>
+    </div>
+  );
+}
+
+function WelcomePanel() {
+  return (
+    <div style={{ flex: 1, overflowY: "auto", padding: "40px 48px" }}>
+      <div style={{ maxWidth: 620 }}>
+        {/* Logo e título */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 16,
+            marginBottom: 28,
+          }}
+        >
+          <div>
+            <BriefcaseBusiness size={35} color="#fff" />
+          </div>
+          <div>
+            <h1
+              style={{
+                margin: 0,
+                fontSize: 26,
+                fontWeight: 800,
+                color: "#f1f5f9",
+                letterSpacing: "-0.02em",
+                lineHeight: 1.2,
+              }}
+            >
+              Vagas DEV
+            </h1>
+            <p style={{ margin: "4px 0 0", fontSize: 14, color: "#64748b" }}>
+              Agregador automático de vagas para desenvolvedores
+            </p>
+          </div>
+        </div>
+
+        {/* Descrição */}
+        <div
+          style={{
+            background: "rgba(99,102,241,0.06)",
+            border: "1px solid rgba(99,102,241,0.15)",
+            borderRadius: 14,
+            padding: "20px 24px",
+            marginBottom: 28,
+          }}
+        >
+          <p
+            style={{
+              margin: 0,
+              fontSize: 14,
+              color: "#94a3b8",
+              lineHeight: 1.8,
+            }}
+          >
+            O <strong style={{ color: "#c7d2fe" }}>Vagas DEV</strong> coleta e
+            agrega automaticamente vagas de emprego para desenvolvedores de
+            diversas plataformas, eliminando a necessidade de acessar cada site
+            separadamente. As vagas são sincronizadas periodicamente e
+            notificadas em tempo real via{" "}
+            <strong style={{ color: "#c7d2fe" }}>Telegram</strong> e{" "}
+            <strong style={{ color: "#c7d2fe" }}>Discord</strong>.
+          </p>
+        </div>
+
+        {/* Funcionalidades */}
+        <div style={{ marginBottom: 28 }}>
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              color: "#475569",
+              letterSpacing: "0.07em",
+              textTransform: "uppercase",
+              marginBottom: 14,
+            }}
+          >
+            ✦ Funcionalidades
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <FeatureItem
+              icon="🔄"
+              text="Sincronização automática a cada 30 minutos com múltiplas fontes de vagas"
+            />
+            <FeatureItem
+              icon="🔔"
+              text="Notificações instantâneas no Telegram e Discord com vagas separadas por tecnologia"
+            />
+            <FeatureItem
+              icon="🔍"
+              text="Filtros avançados por nível, modalidade, empresa, localização e acessibilidade (PCD)"
+            />
+            <FeatureItem
+              icon="♿"
+              text="Identificação e destaque de vagas com cota para pessoas com deficiência"
+            />
+            <FeatureItem
+              icon="🐳"
+              text="Deploy simplificado via Docker Compose com um único comando"
+            />
+          </div>
+        </div>
+
+        {/* Links */}
+        <div style={{ marginBottom: 28 }}>
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              color: "#475569",
+              letterSpacing: "0.07em",
+              textTransform: "uppercase",
+              marginBottom: 14,
+            }}
+          >
+            ✦ Links
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <LinkCard
+              icon="📖"
+              label="Documentação"
+              description="Guia de instalação, configuração e referência da API"
+              href="https://henriquesebastiao.github.io/vagas-dev"
+            />
+            <LinkCard
+              icon="💾"
+              label="Repositório no GitHub"
+              description="Código-fonte, issues e contribuições"
+              href="https://github.com/henriquesebastiao/vagas-dev"
+            />
+            <LinkCard
+              icon="🚀"
+              label="API REST"
+              description="Acesse diretamente os endpoints da API"
+              href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/docs`}
+            />
+          </div>
+        </div>
+
+        {/* Dica de uso */}
+        <div
+          style={{
+            background: "rgba(255,255,255,0.02)",
+            border: "1px solid rgba(255,255,255,0.06)",
+            borderRadius: 12,
+            padding: "16px 20px",
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 12,
+          }}
+        >
+          <span style={{ fontSize: 18, flexShrink: 0 }}>👈</span>
+          <p
+            style={{
+              margin: 0,
+              fontSize: 13,
+              color: "#64748b",
+              lineHeight: 1.7,
+            }}
+          >
+            Selecione uma vaga na lista à esquerda para ver todos os detalhes,
+            incluindo descrição completa e link direto para candidatura.
+          </p>
+        </div>
       </div>
     </div>
   );
 }
 
 export default function JobDetail({ job }) {
-  if (!job)
-    return (
-      <div style={{ flex: 1, overflowY: "auto", padding: "32px 40px" }}>
-        <EmptyState />
-      </div>
-    );
+  if (!job) return <WelcomePanel />;
 
   const level = LEVEL_CONFIG[job.level] || {
     bg: "rgba(255,255,255,0.07)",
@@ -77,7 +284,6 @@ export default function JobDetail({ job }) {
     label: job.workplace_type,
   };
 
-  // Formata a descrição respeitando quebras de linha
   const descriptionLines = (job.description || "")
     .split("\n")
     .map((line, i) => (

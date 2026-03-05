@@ -1,6 +1,5 @@
 "use client";
 // Página principal — orquestra todos os componentes e gerencia o estado global.
-// "use client" é necessário porque usamos useState e useEffect (interatividade no browser).
 
 import { useState, useEffect, useCallback } from "react";
 import { fetchJobs, fetchSources, triggerSync } from "@/lib/api";
@@ -19,7 +18,7 @@ export default function Home() {
 
   const handleFilterChange = useCallback((newFilters) => {
     setFilters(newFilters);
-  }, []); // ← array vazio = função nunca muda de referência
+  }, []);
 
   // Carrega as fontes uma vez ao abrir a página
   useEffect(() => {
@@ -30,7 +29,7 @@ export default function Home() {
 
   // Recarrega as vagas sempre que os filtros mudam
   useEffect(() => {
-    let cancelled = false; // evita atualizar estado se o componente desmontar
+    let cancelled = false;
 
     fetchJobs(filters)
       .then((data) => {
@@ -52,12 +51,11 @@ export default function Home() {
 
     return () => {
       cancelled = true;
-    }; // cleanup quando o filtro mudar antes da resposta chegar
-  }, [filters]); // ← roda novamente sempre que `filters` mudar
+    };
+  }, [filters]);
 
   async function handleSync() {
     await triggerSync("gupy");
-    // Após o sync, recarrega as vagas para mostrar as novas
     fetchJobs(filters).then(setJobs);
   }
 
@@ -97,11 +95,11 @@ export default function Home() {
             onChange={handleFilterChange}
             onSync={handleSync}
             totalJobs={jobs.length}
+            sources={sources}
           />
 
           {/* Lista de vagas com scroll */}
           <div style={{ flex: 1, overflowY: "auto", padding: "8px 20px 20px" }}>
-            {/* Estado de carregamento */}
             {loading && (
               <div
                 style={{
@@ -115,7 +113,6 @@ export default function Home() {
               </div>
             )}
 
-            {/* Estado de erro */}
             {error && !loading && (
               <div
                 style={{
@@ -132,7 +129,6 @@ export default function Home() {
               </div>
             )}
 
-            {/* Lista vazia */}
             {!loading && !error && jobs.length === 0 && (
               <div
                 style={{
@@ -146,7 +142,6 @@ export default function Home() {
               </div>
             )}
 
-            {/* Cards das vagas */}
             {!loading &&
               jobs.map((job) => (
                 <JobCard
@@ -159,7 +154,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Painel direito — detalhes da vaga selecionada */}
+        {/* Painel direito — detalhes ou boas-vindas */}
         <JobDetail job={selected} />
       </div>
 

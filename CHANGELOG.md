@@ -1,3 +1,10 @@
+## [0.2.1](https://github.com/henriquesebastiao/vagas-dev/releases/0.2.1) - 2026-03-05
+
+### Funcionalidade
+
+- Adicionando descrição ao frontend e mais filtros
+
+
 ## [0.1.1](https://github.com/henriquesebastiao/vagas-dev/releases/0.1.1) - 2026-03-04
 
 ### Funcionalidade
