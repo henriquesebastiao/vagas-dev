@@ -1,7 +1,7 @@
 <h1 align="center">
   <a href="https://github.com/henriquesebastiao/vagas-dev" target="_blank" rel="noopener noreferrer">
     <picture>
-      <img width="666" height="375" alt="Vagas Dev Banner" src="https://github.com/user-attachments/assets/958395bc-3201-4f6f-ba3b-0bf897624f48" />
+      <img width="599" height="337" alt="Vagas Dev Banner" src="https://github.com/user-attachments/assets/958395bc-3201-4f6f-ba3b-0bf897624f48" />
     </picture>
   </a>
 </h1>
