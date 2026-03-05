@@ -5,7 +5,7 @@
     </picture>
   </a>
 </h1>
-<p align="center"><i>Sistema para busca de vagas de trabalho para desenvolvedores no Brasil</i></p>
+<p align="center"><i>Buscador de vagas de trabalho para desenvolvedores no Brasil</i></p>
 
 <div align="center">
   
