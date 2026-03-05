@@ -322,6 +322,10 @@ logo = "lucide/briefcase-business"
 # The "extra" section contains miscellaneous settings.
 # ----------------------------------------------------------------------------
 [[project.extra.social]]
+icon = "fontawesome/brands/linkedin"
+link = "https://www.linkedin.com/in/henriquesebastiao"
+
+[[project.extra.social]]
 icon = "fontawesome/brands/discord"
 link = "https://discord.gg/MnnnvNQauf"
 
@@ -332,3 +336,7 @@ link = "https://t.me/+5faW_wL4ybNhMjY5"
 [[project.extra.social]]
 icon = "fontawesome/brands/github"
 link = "https://github.com/henriquesebastiao/vagas-dev"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/docker"
+link = "https://hub.docker.com/repository/docker/henriquesebastiao/vagas-dev-api/general"

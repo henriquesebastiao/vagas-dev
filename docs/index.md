@@ -4,9 +4,20 @@ icon: lucide/rocket
 
 # Vagas de Trabalho para DEVs
 
-Num cenário onde as vagas de trabalho em desenvolvimento de software estão cada vez mais dispersas entre diversas plataformas e sites, este projeto surge como uma solução para centralizar a busca por oportunidades na área de tecnologia. Através da coleta automática de vagas de múltiplas fontes, o sistema oferece uma API unificada que permite aos usuários consultar e filtrar as vagas de acordo com seus critérios específicos, facilitando o processo de encontrar a vaga ideal.
+Num cenário onde as vagas de trabalho em desenvolvimento de software estão cada vez mais dispersas entre diversas
+plataformas e sites, este projeto surge como uma solução para centralizar a busca por oportunidades na área de tecnologia.
+Através da coleta automática de vagas de múltiplas fontes, o sistema oferece uma API unificada que permite aos usuários
+consultar e filtrar as vagas de acordo com seus critérios específicos, facilitando o processo de encontrar a vaga ideal.
 
-A ideia é facilitar a vida de quem está procurando emprego na área de tecnologia, permitindo filtrar por critérios como localização, tipo de trabalho (remoto, híbrido, presencial) e palavras-chave, entre outras funcionalidades.
+A ideia é facilitar a vida de quem está procurando emprego na área de tecnologia, permitindo filtrar por critérios como
+localização, tipo de trabalho (remoto, híbrido, presencial) e palavras-chave, entre outras funcionalidades.
+
+O sistema conta com uma página web para busca de vagas encontradas em um único lugar e uma API REST, ambos os serviços
+podem ser hospedados por qualquer pessoa, mais informações sobre isso podem ser encontradas em [Execute](/do-it-yourself).
+Porém, uma instância pública de cada serviço está disponível nos links abaixo:
+
+- [Página web](https://vagas.henriquesebastiao.com)
+- [API REST](https://vagas-api.henriquesebastiao.com)
 
 !!! warning
 
@@ -41,12 +52,15 @@ Para entrar para os grupos de notificações, basta clicar no link do mensageiro
 ## Fontes Suportadas
 
 - [x] Gupy (via API)
-- [ ] LinkedIn (via scraping)
+- [x] LinkedIn (via scraping)
 
 ## Tecnologias Utilizadas
+
+Abaixo estão listadas as principais tecnologias utilizadas para o desenvolvimento deste sistema.
 
 - **FastAPI** - API REST assíncrona
 - **SQLAlchemy** - ORM e acesso ao banco de dados
 - **APScheduler** - agendamento de tarefas em background
 - **httpx** - cliente HTTP assíncrono para os scrapers
 - **Pydantic** - validação e serialização de dados
+- **NextJS** - Interface Web
