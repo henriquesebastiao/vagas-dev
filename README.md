@@ -1,10 +1,28 @@
-# 💼 Agregador de Vagas para Desenvolvedores
+<h1 align="center">
+  <a href="https://github.com/henriquesebastiao/vagas-dev" target="_blank" rel="noopener noreferrer">
+    <picture>
+      <img width="666" height="375" alt="Vagas Dev Banner" src="https://github.com/user-attachments/assets/958395bc-3201-4f6f-ba3b-0bf897624f48" />
+    </picture>
+  </a>
+</h1>
+<p align="center"><i>Sistema para busca de vagas de trabalho para desenvolvedores no Brasil</i></p>
 
-[![Test](https://github.com/henriquesebastiao/vagas-dev/actions/workflows/test.yml/badge.svg)](https://github.com/henriquesebastiao/vagas-dev/actions/workflows/test.yml)
-[![Build](https://github.com/henriquesebastiao/vagas-dev/actions/workflows/deploy.yml/badge.svg)](https://github.com/henriquesebastiao/vagas-dev/actions/workflows/deploy.yml)
-[![Visitors](https://api.visitorbadge.io/api/visitors?path=henriquesebastiao%2Fvagas-dev&label=repository%20visits&countColor=%231182c3&style=flat)](https://github.com/henriquesebastiao/vagas-dev)
+<div align="center">
+  
+  [![Test](https://github.com/henriquesebastiao/vagas-dev/actions/workflows/test.yml/badge.svg)](https://github.com/henriquesebastiao/vagas-dev/actions/workflows/test.yml)
+  [![Build](https://github.com/henriquesebastiao/vagas-dev/actions/workflows/deploy.yml/badge.svg)](https://github.com/henriquesebastiao/vagas-dev/actions/workflows/deploy.yml)
+  [![GitHub Release](https://img.shields.io/github/v/release/henriquesebastiao/vagas-dev?color=blue)](https://github.com/henriquesebastiao/vagas-dev/releases)
+  [![Visitors](https://api.visitorbadge.io/api/visitors?path=henriquesebastiao%2Fvagas-dev&label=repository%20visits&countColor=%231182c3&style=flat)](https://github.com/henriquesebastiao/vagas-dev)
+
+</div>
+
+## ✨ O que e porquê?
 
 Um sistema de busca de vagas de emprego para desenvolvedores e notificações via apps de mensagens.
+
+Num cenário onde as vagas de trabalho em desenvolvimento de software estão cada vez mais dispersas entre diversas plataformas e sites, este projeto surge como uma solução para centralizar a busca por oportunidades na área de tecnologia. Através da coleta automática de vagas de múltiplas fontes, o sistema oferece uma API unificada que permite aos usuários consultar e filtrar as vagas de acordo com seus critérios específicos, facilitando o processo de encontrar a vaga ideal.
+
+A ideia é facilitar a vida de quem está procurando emprego na área de tecnologia, permitindo filtrar por critérios como localização, tipo de trabalho (remoto, híbrido, presencial) e palavras-chave, entre outras funcionalidades.
 
 Esse sistema é composto por uma API REST que busca por novas vagas de trabalho periódicamente em fontes como [Gupy](https://portal.gupy.io/) e [LinkedIn](https://www.linkedin.com) em background e notifica sobre as novas vagas encontradas via apps de mensagens como Telegram e Discord.
 
