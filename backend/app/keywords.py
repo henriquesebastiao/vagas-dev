@@ -1,18 +1,9 @@
 KEYWORDS = [
     'python',
-    'fastapi',
     'django',
-    'flask',
-    'sqlalchemy',
-    'docker',
-    'kubernetes',
     'java',
-    'spring',
     'golang',
     'javascript',
-    'react',
-    'angular',
-    'vue',
     'frontend',
     'backend',
 ]

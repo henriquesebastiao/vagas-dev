@@ -37,7 +37,7 @@ export default function Header({ sources }) {
               width: 34,
               height: 34,
               borderRadius: 10,
-              background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+              background: "linear-gradient(135deg, #6366f1, #0CC0DF)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",

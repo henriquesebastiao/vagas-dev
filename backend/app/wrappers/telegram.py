@@ -16,7 +16,6 @@ from app.keywords import (
     PYTHON_KEYWORDS,
 )
 from app.models import Job
-from app.utils import add_time, after_request, before_request
 
 logger = logging.getLogger(__name__)
 
@@ -78,10 +77,6 @@ class BotTelegram:
             base_url=f'https://api.telegram.org/bot{self._token}',
             transport=limiter_transport,
             timeout=10,
-            event_hooks={
-                'request': [before_request, add_time],
-                'response': [after_request],
-            },
         ) as client:
             settings = get_settings()
 

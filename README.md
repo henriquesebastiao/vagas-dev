@@ -8,7 +8,7 @@ Um sistema de busca de vagas de emprego para desenvolvedores e notificações vi
 
 Esse sistema é composto por uma API REST que busca por novas vagas de trabalho periódicamente em fontes como [Gupy](https://portal.gupy.io/) e [LinkedIn](https://www.linkedin.com) em background e notifica sobre as novas vagas encontradas via apps de mensagens como Telegram e Discord.
 
-Os links de acesso ao sistema estão listado abaixo:
+Os links de acesso ao sistema estão listados abaixo:
 
 - [Documentação](https://henriquesebastiao.github.io/vagas-dev/)
 - [Interface Web](https://vagas.henriquesebastiao.com/)
@@ -20,7 +20,7 @@ Os links de acesso ao sistema estão listado abaixo:
 
 ## 🔔 Notificações
 
-Para receber alertas das vagas encontradas pelo sistema faça parte do grupo de alertas no seu app mensageiro de preferência entre os listados abaixo:
+Para receber alerta das vagas encontradas pelo sistema faça parte do grupo de alerta no seu app mensageiro de preferência entre os listados abaixo:
 
 > O link de cada um é o link de convite para o grupo ou servidor.
 
@@ -30,7 +30,7 @@ Para receber alertas das vagas encontradas pelo sistema faça parte do grupo de 
 ## Funcionalidades
 
 - **Busca periódica automática** — scheduler configurável que roda em background e coleta novas vagas em intervalos definidos, sem intervenção manual
-- **Notificações** — integração com Telegram e Discord para enviar alertas de novas vagas que correspondam a palavras-chave específicas
+- **Notificações** — integração com Telegram e Discord para enviar alerta de novas vagas que correspondam a palavras-chave específicas
 - **Sem duplicação de vagas** — vagas já registradas são ignoradas automaticamente, garantindo que o banco nunca acumule duplicatas, independente de quantas vezes o scheduler seja executado
 - **API REST centralizada** — todas as vagas de todas as fontes acessíveis por um único endpoint, com filtros por palavra-chave, localização, tipo de trabalho e fonte
 - **Filtros disponíveis** - busque vagas podendo filtrar pelas seguintes características:
@@ -42,13 +42,13 @@ Para receber alertas das vagas encontradas pelo sistema faça parte do grupo de 
   - **Paginação** — controle o número de resultados retornados e a partir de qual posição começar (limit/offset)
 - **Trigger manual de sync** — é possível disparar uma sincronização sob demanda via endpoint, sem precisar esperar o próximo ciclo do scheduler
 - **Arquitetura extensível** — adicionar uma nova fonte de vagas exige apenas criar um novo scraper herdando da classe base; toda a lógica de persistência e deduplicação já está pronta
-- **Interface Web** - interface web desenvolvida com [Next.js](https://nextjs.org/)   para visualização e busca das vagas encontradas pelo sistema.
+- **Interface Web** - interface web desenvolvida com [Next.js](https://nextjs.org/) para visualização e busca das vagas encontradas pelo sistema.
 
 ## Fontes Suportadas
 
-| Fonte | Método | Status       |
-|-------|--------|--------------|
-| Gupy  | API    | ✅ Disponível |
+| Fonte    | Método  | Status       |
+|----------|---------|--------------|
+| Gupy     | API     | ✅ Disponível |
 | LinkedIn | Scraper | ✅ Disponível |
 
 > Novas fontes podem ser adicionadas criando um scraper que implementa `BaseJobScraper`.

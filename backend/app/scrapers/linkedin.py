@@ -1,3 +1,4 @@
+import asyncio
 import hashlib
 import logging
 from http import HTTPStatus
@@ -7,11 +8,6 @@ from bs4 import BeautifulSoup
 
 from app.scrapers import transport
 from app.scrapers.base import BaseJobScraper
-from app.utils import (
-    add_time,
-    after_request,
-    before_request,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +19,8 @@ linkedin_level_id = {
 
 linkedin_workplace_type_id = {
     'remote': 2,
-    'hybrid': 3,
-    'on-site': 1,
+    # 'hybrid': 3,
+    # 'on-site': 1,
 }
 
 
@@ -46,10 +42,6 @@ class LinkedInScraper(BaseJobScraper):
             base_url=self.BASE_URL,
             transport=transport,
             timeout=30,
-            event_hooks={
-                'request': [before_request, add_time],
-                'response': [after_request],
-            },
         ) as client:
             for keyword in self.keywords:
                 for level, level_id in linkedin_level_id.items():
@@ -57,74 +49,86 @@ class LinkedInScraper(BaseJobScraper):
                         workplace_type,
                         workplace_type_id,
                     ) in linkedin_workplace_type_id.items():
-                        params = {
-                            'keywords': f'"{keyword}"',
-                            'f_E': level_id,
-                            'f_WT': workplace_type_id,
-                            'location': 'Brasil',
-                            'geoId': '106057199',
-                        }
+                        while True:
+                            params = {
+                                'keywords': f'"{keyword}"',
+                                'f_E': level_id,
+                                'f_WT': workplace_type_id,
+                                'location': 'Brasil',
+                                'geoId': '106057199',
+                            }
 
-                        try:
-                            response = await client.get(
-                                '/jobs/search', params=params
-                            )
-                        except httpx.ReadTimeout:
-                            logger.warning(
-                                'Timeout ao buscar vagas para keyword '
-                                f'"{keyword}". Pulando para o próximo keyword.'
-                            )
-                            continue
+                            try:
+                                response = await client.get(
+                                    '/jobs/search', params=params
+                                )
+                            except httpx.ReadTimeout:
+                                logger.warning(
+                                    'Timeout ao buscar vagas para keyword '
+                                    f'"{keyword}". Pulando para o próximo keyword.'
+                                )
+                                break
 
-                        if response.status_code == HTTPStatus.OK:
-                            bs = BeautifulSoup(response.text, 'html.parser')
+                            if response.status_code == HTTPStatus.OK:
+                                bs = BeautifulSoup(
+                                    response.text, 'html.parser'
+                                )
 
-                            # Busca pelos links e títulos das vagas.
-                            jobs_list = bs.find_all(
-                                'a', {'class': 'base-card__full-link'}
-                            )
+                                # Busca pelos links e títulos das vagas.
+                                jobs_list = bs.find_all(
+                                    'a', {'class': 'base-card__full-link'}
+                                )
 
-                            if len(jobs_list) == 0:
-                                continue
+                                if len(jobs_list) == 0:
+                                    break
 
-                            jobs = []
+                                jobs = []
 
-                            for job in jobs_list:
-                                job_data = {
-                                    'title': job.get_text(strip=True),
-                                    'url': job['href'],
-                                }
-                                jobs.append(job_data)
+                                for job in jobs_list:
+                                    job_data = {
+                                        'title': job.get_text(strip=True),
+                                        'url': job['href'],
+                                    }
+                                    jobs.append(job_data)
 
-                            for job in jobs:
-                                external_id = hashlib.md5(
-                                    job['title'].encode()
-                                ).hexdigest()[:10]
-                                content = {
-                                    'external_id': external_id,
-                                    'keyword': keyword,
-                                    'title': job['title'],
-                                    'description': None,
-                                    'company': None,
-                                    'location': 'Brasil',
-                                    'url': job['url'],
-                                    'workplace_type': workplace_type,
-                                    'published_at': None,
-                                    'end_applications': None,
-                                    'for_pcd': False,
-                                    'level': level,
-                                }
+                                for job in jobs:
+                                    external_id = hashlib.md5(
+                                        job['title'].encode()
+                                    ).hexdigest()[:10]
+                                    content = {
+                                        'external_id': external_id,
+                                        'keyword': keyword,
+                                        'title': job['title'],
+                                        'description': None,
+                                        'company': None,
+                                        'location': 'Brasil',
+                                        'url': job['url'],
+                                        'workplace_type': workplace_type,
+                                        'published_at': None,
+                                        'end_applications': None,
+                                        'for_pcd': False,
+                                        'level': level,
+                                    }
 
-                                all_jobs.append(self._parse(content))
-                        else:
-                            logger.warning(
-                                'Erro ao buscar vagas '
-                                f'para keyword "{keyword}". '
-                                f'Status code: {response.status_code}. '
-                                f'Resposta: {response.text[:200]}... '
-                                'Pulando para o próximo keyword.'
-                            )
-                            continue
+                                    all_jobs.append(self._parse(content))
+                                break
+                            elif response.status_code == 999:  # noqa
+                                logger.warning(
+                                    'Status 999 recebido, tentando novamente...'
+                                )
+                                await asyncio.sleep(
+                                    2
+                                )  # Aguarda antes de tentar novamente
+                                continue  # Repete o while com os mesmos valores
+                            else:
+                                logger.warning(
+                                    'Erro ao buscar vagas '
+                                    f'para keyword "{keyword}". '
+                                    f'Status code: {response.status_code}. '
+                                    f'Resposta: {response.text[:200]}... '
+                                    'Pulando para o próximo keyword.'
+                                )
+                                break
         return all_jobs
 
     @staticmethod

@@ -6,12 +6,7 @@ import httpx
 
 from app.scrapers import transport
 from app.scrapers.base import BaseJobScraper
-from app.utils import (
-    add_time,
-    after_request,
-    before_request,
-    get_level_seniority,
-)
+from app.utils import get_level_seniority
 
 logger = logging.getLogger(__name__)
 
@@ -48,10 +43,6 @@ class GupyScraper(BaseJobScraper):
             base_url=self.BASE_URL,
             transport=transport,
             timeout=10,
-            event_hooks={
-                'request': [before_request, add_time],
-                'response': [after_request],
-            },
         ) as client:
             for keyword in self.keywords:
                 offset = 0

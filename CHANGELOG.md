@@ -1,3 +1,10 @@
+## [0.1.0](https://github.com/henriquesebastiao/vagas-dev/releases/0.1.0) - 2026-03-04
+
+### Core
+
+- Refatorando código e melhorias na busca de vagas
+
+
 ## [0.1.0-beta.5](https://github.com/henriquesebastiao/vagas-dev/releases/0.1.0-beta.5) - 2026-03-04
 
 ### Funcionalidade

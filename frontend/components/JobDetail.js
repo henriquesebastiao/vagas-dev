@@ -118,7 +118,7 @@ export default function JobDetail({ job }) {
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+                background: "linear-gradient(135deg, #6366f1, #0CC0DF)",
                 color: "#fff",
                 padding: "10px 20px",
                 borderRadius: 10,
