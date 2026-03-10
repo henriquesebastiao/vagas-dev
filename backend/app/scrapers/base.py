@@ -1,13 +1,11 @@
-import logging
 from abc import ABC, abstractmethod
 
+from loguru import logger
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.keywords import KEYWORDS
 from app.models import Job
-
-logger = logging.getLogger(__name__)
 
 
 class BaseJobScraper(ABC):

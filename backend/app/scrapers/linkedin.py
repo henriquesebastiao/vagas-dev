@@ -1,15 +1,13 @@
 import asyncio
 import hashlib
-import logging
 from http import HTTPStatus
 
 import httpx
 from bs4 import BeautifulSoup
+from loguru import logger
 
 from app.scrapers import transport
 from app.scrapers.base import BaseJobScraper
-
-logger = logging.getLogger(__name__)
 
 linkedin_level_id = {
     'estagio': 1,

@@ -1,8 +1,8 @@
 import asyncio
-import logging
 
 import discord
 from discord.ext import commands
+from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.settings import get_settings
@@ -15,7 +15,6 @@ from app.keywords import (
 )
 from app.models import Job
 
-logger = logging.getLogger(__name__)
 settings = get_settings()
 
 intents = discord.Intents.all()

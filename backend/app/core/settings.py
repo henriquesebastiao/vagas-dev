@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     # App
     APP_URL: str = 'http://localhost:8000'
     INTERVAL_SYNC: int = 60  # Intervalo de execução dos jobs do scheduler
+    DEBUG: bool = False
 
     # Telegram
     TELEGRAM_BOT_TOKEN: str = ''

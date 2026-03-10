@@ -1,3 +1,10 @@
+## [0.2.2](https://github.com/henriquesebastiao/vagas-dev/releases/0.2.2) - 2026-03-10
+
+### Core
+
+- Melhorando logs com loguru
+
+
 ## [0.2.1](https://github.com/henriquesebastiao/vagas-dev/releases/0.2.1) - 2026-03-05
 
 ### Funcionalidade

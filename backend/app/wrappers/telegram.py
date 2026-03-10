@@ -1,7 +1,7 @@
-import logging
 from http import HTTPStatus
 
 import httpx
+from loguru import logger
 from pyrate_limiter import limiter_factory
 from pyrate_limiter.abstracts.rate import Duration
 from pyrate_limiter.extras.httpx_limiter import AsyncRateLimiterTransport
@@ -16,8 +16,6 @@ from app.keywords import (
     PYTHON_KEYWORDS,
 )
 from app.models import Job
-
-logger = logging.getLogger(__name__)
 
 
 class BotTelegram:
@@ -38,7 +36,7 @@ class BotTelegram:
             if topic_id:
                 payload['message_thread_id'] = topic_id  # pragma: no cover
 
-            logger.info(
+            logger.debug(
                 'Enviando mensagem para '
                 f'chat_id={chat_id} com topic_id={topic_id}'
             )

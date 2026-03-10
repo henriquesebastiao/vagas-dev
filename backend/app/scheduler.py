@@ -1,7 +1,6 @@
-import logging
-
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
+from loguru import logger
 
 from app.core.database import AsyncSessionLocal
 from app.core.settings import get_settings
@@ -9,7 +8,6 @@ from app.keywords import KEYWORDS
 from app.notifiers import notify_new_jobs
 from app.scrapers import gupy, linkedin
 
-logger = logging.getLogger(__name__)
 scheduler = AsyncIOScheduler()
 settings = get_settings()
 

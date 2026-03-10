@@ -1,7 +1,7 @@
-import logging
 from typing import Annotated
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, status
+from loguru import logger
 from sqlalchemy import func, select
 
 from app.enum import JobLevel, JobSource, Keyword, WorkplaceType
@@ -10,8 +10,6 @@ from app.schemas import Message
 from app.schemas.job import JobOut, SourceOut
 from app.scrapers import gupy, linkedin
 from app.utils import Session
-
-logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix='/jobs', tags=['jobs'])
 

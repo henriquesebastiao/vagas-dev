@@ -1,7 +1,7 @@
-import logging
 from dataclasses import asdict
 from typing import Any
 
+from loguru import logger
 from sqlalchemy import select
 
 from app.core.database import AsyncSessionLocal
@@ -9,8 +9,6 @@ from app.core.settings import get_settings
 from app.models import Job
 from app.wrappers.discord_bot import send_notification_jobs
 from app.wrappers.telegram import BotTelegram
-
-logger = logging.getLogger(__name__)
 
 
 async def get_jobs_for_selector(selector) -> dict[str, Any]:

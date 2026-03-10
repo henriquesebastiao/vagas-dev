@@ -13,6 +13,7 @@ dependencies = [
     "hishel[async]>=1.1.9",
     "httpx>=0.28.1",
     "httpx-retries>=0.4.6",
+    "loguru>=0.7.3",
     "psycopg[binary]>=3.3.3",
     "pydantic>=2.12.5",
     "pydantic-settings>=2.13.1",
@@ -73,7 +74,7 @@ quote-style = 'single'
 'notifiers.py' = ['E712']
 'gupy.py' = ['E501']
 '**/tests/**/*.py' = ['E501']
-'main.py' = ['E501']
+'main.py' = ['E501', 'PLR6301']
 '**/schemas/*.py' = ['E501']
 'linkedin.py' = ['PLR1702', 'E501']
 

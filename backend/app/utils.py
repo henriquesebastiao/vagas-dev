@@ -1,4 +1,3 @@
-import logging
 from typing import Annotated
 
 from fastapi import Depends
@@ -8,7 +7,6 @@ from app.core.database import get_session
 from app.enum import JobLevel
 
 Session = Annotated[AsyncSession, Depends(get_session)]
-_logger = logging.getLogger(__name__)
 
 
 def get_level_seniority(title: str) -> str | None:

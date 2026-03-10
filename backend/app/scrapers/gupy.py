@@ -1,14 +1,12 @@
 import html
-import logging
 import re
 
 import httpx
+from loguru import logger
 
 from app.scrapers import transport
 from app.scrapers.base import BaseJobScraper
 from app.utils import get_level_seniority
-
-logger = logging.getLogger(__name__)
 
 
 class GupyScraper(BaseJobScraper):
