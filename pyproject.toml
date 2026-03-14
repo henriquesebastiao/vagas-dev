@@ -31,14 +31,14 @@ dev = [
     "pytest-cov>=7.0.0",
     "radon>=6.0.1",
     "respx>=0.22.0",
-    "ruff>=0.15.5",
+    "ruff>=0.15.6",
     "safety>=3.7.0",
     "taskipy>=1.14.1",
     "testcontainers>=4.14.1",
     "towncrier>=25.8.0",
 ]
 doc = [
-    "zensical>=0.0.24",
+    "zensical>=0.0.27",
 ]
 
 [tool.setuptools.packages.find]

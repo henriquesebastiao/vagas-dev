@@ -1,3 +1,10 @@
+## [0.2.3](https://github.com/henriquesebastiao/vagas-dev/releases/0.2.3) - 2026-03-14
+
+### Correção de Bug
+
+- Corrigindo arquivo de requirements
+
+
 ## [0.2.2](https://github.com/henriquesebastiao/vagas-dev/releases/0.2.2) - 2026-03-10
 
 ### Core
