@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "format": "prettier --write ."
+    "format": "prettier --write app components lib"
   },
   "dependencies": {
     "lucide-react": "^0.575.0",

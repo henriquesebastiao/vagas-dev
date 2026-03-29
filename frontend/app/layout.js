@@ -17,6 +17,13 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR">
+      <head>
+        <script
+          defer
+          src="https://umami.henriquesebastiao.com/script.js"
+          data-website-id="7562705b-6fb8-44ad-a836-0ba266cdfcab"
+        />
+      </head>
       <body className={dmSans.className} style={{ margin: 0, padding: 0 }}>
         {children}
       </body>
