@@ -77,18 +77,18 @@ export default function Home() {
           display: "flex",
           flex: 1,
           overflow: "hidden",
-          height: "calc(100vh - 105px)",
         }}
       >
         {/* Painel esquerdo — filtros + lista de vagas */}
         <div
           style={{
-            width: 420,
-            minWidth: 420,
+            width: 450,
+            minWidth: 450,
             borderRight: "1px solid rgba(255,255,255,0.07)",
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
+            height: "calc(100vh - 105px)",
           }}
         >
           <Filters
@@ -155,7 +155,9 @@ export default function Home() {
         </div>
 
         {/* Painel direito — detalhes ou boas-vindas */}
-        <JobDetail job={selected} />
+        <div style={{ height: "calc(100vh - 105px)", overflowY: "auto" }}>
+          <JobDetail job={selected} />
+        </div>
       </div>
 
       <style>{`
