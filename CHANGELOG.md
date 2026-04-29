@@ -1,3 +1,10 @@
+## [0.2.4](https://github.com/henriquesebastiao/vagas-dev/releases/0.2.4) - 2026-04-29
+
+### Correção de Bug
+
+- Adiciona scroll independente na listagem de vagas e no painel de detalhes
+
+
 ## [0.2.3](https://github.com/henriquesebastiao/vagas-dev/releases/0.2.3) - 2026-03-14
 
 ### Correção de Bug
