@@ -30,7 +30,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push api image
         id: push-api
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: backend/Dockerfile
@@ -45,7 +45,7 @@ jobs:
             DOCKER_METADATA_OUTPUT_JSON
       - name: Build and push ui image
         id: push-ui
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: backend/Dockerfile
