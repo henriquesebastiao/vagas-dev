@@ -16,99 +16,149 @@
 
 </div>
 
-## ✨ O que e porquê?
+## O que é e por quê?
 
-Um sistema de busca de vagas de emprego para desenvolvedores.
+Um buscador de vagas de emprego para desenvolvedores no Brasil.
 
-Num cenário onde as vagas de trabalho em desenvolvimento de software estão cada vez mais dispersas entre diversas plataformas e sites, este projeto surge como uma solução para centralizar a busca por oportunidades na área de tecnologia. Através da coleta automática de vagas de múltiplas fontes, o sistema oferece uma API unificada que permite aos usuários consultar e filtrar as vagas de acordo com seus critérios específicos, facilitando o processo de encontrar a vaga ideal.
+As vagas de desenvolvimento de software estão espalhadas por várias plataformas. O Vagas Dev coleta automaticamente as vagas dessas fontes, guarda tudo em um único banco e permite consultar e filtrar por cargo, empresa, nível, modalidade (remoto, híbrido, presencial), local e vagas para pessoas com deficiência.
 
-A ideia é facilitar a vida de quem está procurando emprego na área de tecnologia, permitindo filtrar por critérios como localização, tipo de trabalho (remoto, híbrido, presencial) e palavras-chave, entre outras funcionalidades.
+O sistema é formado por:
 
-Esse sistema é composto por uma API REST que busca por novas vagas de trabalho periódicamente em fontes como [Gupy](https://portal.gupy.io/) e [LinkedIn](https://www.linkedin.com) em background e as disponibiliza em uma interface web e em uma API REST.
+- uma **API REST** (FastAPI) que busca vagas novas periodicamente em segundo plano e as disponibiliza com filtros;
+- uma **interface web** (Next.js) para navegar pelas vagas e abrir a candidatura no site de origem.
 
-Os links de acesso ao sistema estão listados abaixo:
+Links da instância pública:
 
+- [Interface web](https://vagas.henriquesebastiao.com/)
+- [API](https://vagas-api.henriquesebastiao.com/) (documentação interativa na própria raiz)
 - [Documentação](https://henriquesebastiao.github.io/vagas-dev/)
-- [Interface Web](https://vagas.henriquesebastiao.com/)
-- [API](https://vagas-api.henriquesebastiao.com/)
 
 > [!IMPORTANT]
-> O sistema está na sua fase inicial de desenvolvimento. Novas fontes podem ser adicionadas em breve.
-> Caso queira contribuir com desenvolvimento, relatar bugs ou sugerir melhorias, sinta-se à vontade para abrir um PR ou issue com sua contribuição!
+> O projeto está em fase inicial de desenvolvimento. Contribuições, relatos de bugs e sugestões são bem-vindos via issue ou PR.
 
 ## Funcionalidades
 
-- **Busca periódica automática** — scheduler configurável que roda em background e coleta novas vagas em intervalos definidos, sem intervenção manual
-- **Sem duplicação de vagas** — vagas já registradas são ignoradas automaticamente, garantindo que o banco nunca acumule duplicatas, independente de quantas vezes o scheduler seja executado
-- **API REST centralizada** — todas as vagas de todas as fontes acessíveis por um único endpoint, com filtros por palavra-chave, localização, tipo de trabalho e fonte
-- **Filtros disponíveis** - busque vagas podendo filtrar pelas seguintes características:
-  - **Palavra-chave** — busca no título da vaga
-  - **Localização** — filtra por cidade ou estado (ex: "São Paulo", "Goiás")
-  - **Tipo de trabalho** — filtra por `remote`, `hybrid` ou `on-site`
-  - **Fonte** — filtra por plataforma de origem (ex: `gupy`, `linkedin`, etc.)
-  - **Vagas para pessoas com deficiência** — filtro específico para vagas que aceitam candidaturas de pessoas com deficiência
-  - **Paginação** — controle o número de resultados retornados e a partir de qual posição começar (limit/offset)
-- **Trigger manual de sync** — é possível disparar uma sincronização sob demanda via endpoint, sem precisar esperar o próximo ciclo do scheduler
-- **Arquitetura extensível** — adicionar uma nova fonte de vagas exige apenas criar um novo scraper herdando da classe base; toda a lógica de persistência e deduplicação já está pronta
-- **Interface Web** - interface web desenvolvida com [Next.js](https://nextjs.org/) para visualização e busca das vagas encontradas pelo sistema.
+- **Busca periódica automática**: a API coleta vagas novas assim que inicia e depois a cada `INTERVAL_SYNC` minutos, sem intervenção manual.
+- **Sem vagas duplicadas**: vagas já registradas (mesmo ID externo e mesma fonte) são ignoradas, não importa quantas vezes a coleta rode.
+- **Nível da vaga deduzido do título**: estágio, júnior, pleno ou sênior, quando o título indica.
+- **API REST centralizada**: todas as vagas de todas as fontes em um único endpoint, com filtros e paginação.
+- **Sincronização manual**: dispare uma coleta sob demanda por endpoint, sem esperar o próximo ciclo.
+- **Interface web**: lista de vagas com filtros, painel de detalhes, tema claro e escuro e layout para celular.
+- **Execução via Docker**: imagens prontas da API e da interface, publicadas a cada release.
+- **Arquitetura extensível**: uma nova fonte exige apenas um novo scraper; persistência e deduplicação já estão prontas.
 
-## Fontes Suportadas
+## Fontes suportadas
 
-| Fonte    | Método  | Status       |
-|----------|---------|--------------|
-| Gupy     | API     | ✅ Disponível |
-| LinkedIn | Scraper | ✅ Disponível |
+| Fonte    | Método                        | Status                                                                  |
+|----------|-------------------------------|-------------------------------------------------------------------------|
+| Gupy     | API pública                   | ⚠️ Indisponível: o endpoint usado pelo scraper passou a responder 404    |
+| LinkedIn | Scraping da página de busca   | ✅ Disponível (vagas remotas; sem empresa e descrição)                   |
 
-> Novas fontes podem ser adicionadas criando um scraper que implementa `BaseJobScraper`.
+Novas fontes podem ser adicionadas com um scraper que herda de `BaseJobScraper` (veja [Contribuindo](#contribuindo)).
 
-## Endpoints
+## API
 
-| Método | Rota                  | Descrição                                    |
-|--------|-----------------------|----------------------------------------------|
-| `GET`  | `/jobs`               | Lista vagas com filtros opcionais            |
-| `POST` | `/jobs/sync/{source}` | Dispara sync manual de uma fonte             |
-| `GET`  | `/jobs/sources`       | Lista fontes e quantidade de vagas por fonte |
-| `GET`  | `/health`             | Health check da aplicação                    |
+| Método | Rota                  | Descrição                                          |
+|--------|-----------------------|----------------------------------------------------|
+| `GET`  | `/jobs`               | Lista vagas com filtros opcionais                  |
+| `POST` | `/jobs/sync/{source}` | Dispara uma coleta manual da fonte (`gupy`, `linkedin`) |
+| `GET`  | `/jobs/sources`       | Lista as fontes e a quantidade de vagas de cada uma |
+| `GET`  | `/health`             | Health check da aplicação                          |
 
-### Filtros disponíveis em `GET /jobs`
+A documentação interativa (Swagger) fica na raiz da API (`/`) e a alternativa em `/redoc`.
 
-| Parâmetro        | Tipo   | Descrição                           |
-|------------------|--------|-------------------------------------|
-| `keyword`        | string | Busca no título e descrição da vaga |
-| `source`         | string | Filtra por fonte (`gupy`, etc.)     |
-| `location`       | string | Filtra por cidade ou estado         |
-| `workplace_type` | string | `remote`, `hybrid` ou `on-site`     |
-| `limit`          | int    | Máximo de resultados (padrão: 50)   |
-| `offset`         | int    | Paginação                           |
+### Filtros de `GET /jobs`
 
+| Parâmetro        | Tipo   | Descrição                                                        |
+|------------------|--------|------------------------------------------------------------------|
+| `keyword`        | string | Texto buscado no título da vaga (ex.: `python`, `react`)         |
+| `company`        | string | Texto buscado no nome da empresa                                 |
+| `source`         | string | Fonte: `gupy` ou `linkedin`                                      |
+| `location`       | string | Texto buscado no local (cidade, estado ou país)                  |
+| `workplace_type` | string | `remote`, `hybrid` ou `on-site`                                  |
+| `level`          | string | `estagio`, `junior`, `pleno`, `senior` ou `trainee`              |
+| `for_pcd`        | bool   | `true` para apenas vagas para pessoas com deficiência            |
+| `limit`          | int    | Máximo de resultados (padrão 50, máximo 200)                     |
+| `offset`         | int    | Quantidade de vagas a pular, para paginação                      |
+
+As vagas são retornadas da mais recente para a mais antiga (data em que foram encontradas).
+
+## Executando com Docker
+
+As imagens são publicadas no GitHub Container Registry a cada release:
+
+- `ghcr.io/henriquesebastiao/vagas-dev/api`
+- `ghcr.io/henriquesebastiao/vagas-dev/ui`
+
+O passo a passo completo (compose, variáveis de ambiente e uso atrás de um proxy reverso) está em [Execute você mesmo](https://henriquesebastiao.github.io/vagas-dev/do-it-yourself/).
+
+Para subir tudo a partir do código deste repositório:
+
+```shell
+cp .env.example .env
+docker compose up -d --build
+```
+
+A API fica em `http://localhost:8000` e a interface em `http://localhost:3000`.
+
+## Desenvolvimento
+
+Requisitos: Python 3.14 com [uv](https://docs.astral.sh/uv/), Node.js 20 e Docker (os testes sobem um PostgreSQL com testcontainers).
+
+```shell
+make sync    # instala as dependências (inclusive de desenvolvimento e docs)
+make dev     # API com hot reload em http://127.0.0.1:8000
+make front   # interface em http://localhost:3000
+make test    # testes com cobertura
+make lint    # verificação de estilo (Python, frontend, YAML, Makefile)
+make format  # formatação automática
+make doc     # documentação em http://localhost:3000
+```
+
+A API aplica as migrations do banco automaticamente ao iniciar. Para criar uma migration depois de alterar `backend/app/models.py`:
+
+```shell
+uv run alembic revision --autogenerate -m "descrição da mudança"
+```
+
+Depois de adicionar ou remover dependências Python, rode `make export`: a imagem Docker da API instala a partir do `requirements.txt`.
 
 ## Contribuindo
 
-### Como Adicionar um Novo Scraper
+### Como adicionar um novo scraper
 
-Caso queira adicionar uma nova fonte de vagas, siga os passos abaixo para adicionar um novo scraper:
-
-1. Crie um arquivo em `scrapers/minha_fonte.py`
-2. Herde de `BaseJobScraper` e defina `source_name`
-3. Implemente `fetch_jobs()` retornando uma lista de dicts no formato do model `Job`
-4. Registre um job no `scheduler.py` com o intervalo desejado
+1. Crie `backend/app/scrapers/minha_fonte.py` com uma classe que herda de `BaseJobScraper` e define `source_name` e `BASE_URL`.
+2. Implemente `fetch_jobs()` retornando uma lista de dicts com as chaves do model `Job` (exceto `source` e `found_at`, preenchidos automaticamente).
+3. Adicione a fonte ao enum `JobSource` em `backend/app/enum.py`.
+4. Registre a coleta periódica em `backend/app/scheduler.py`.
+5. Adicione o scraper ao dicionário `scrapers` de `trigger_sync` em `backend/app/api/routes/job.py`.
 
 ```python
+import httpx
+
+from app.scrapers import build_transport
 from app.scrapers.base import BaseJobScraper
 
 
 class MinhaFonteScraper(BaseJobScraper):
-    source_name = "minha_fonte"
+    source_name = 'minha_fonte'
+    BASE_URL = 'https://exemplo.com'
 
     async def fetch_jobs(self) -> list[dict]:
-        # sua lógica aqui
-        ...
+        # Crie um transport novo para cada client (retry + cache HTTP)
+        async with httpx.AsyncClient(
+            base_url=self.BASE_URL, transport=build_transport()
+        ) as client:
+            ...
 ```
 
-## Tecnologias Utilizadas
+## Tecnologias utilizadas
 
-- **FastAPI** — API REST assíncrona
-- **SQLAlchemy (async)** — ORM e acesso ao banco de dados
-- **APScheduler** — agendamento de tarefas em background
-- **httpx** — cliente HTTP assíncrono para os scrapers
-- **Pydantic** — validação e serialização de dados
+- **FastAPI**: API REST assíncrona
+- **SQLAlchemy (async) + Alembic**: ORM, acesso ao banco e migrations
+- **PostgreSQL**: banco de dados
+- **APScheduler**: agendamento das coletas
+- **httpx + BeautifulSoup**: requisições HTTP e scraping
+- **Pydantic**: validação e serialização de dados
+- **Next.js + React**: interface web (exportada como site estático)
+- **Docker**: execução da API, da interface e do banco

@@ -19,53 +19,47 @@ icon: lucide/rocket
 </div>
 
 
-Num cenário onde as vagas de trabalho em desenvolvimento de software estão cada vez mais dispersas entre diversas
-plataformas e sites, este projeto surge como uma solução para centralizar a busca por oportunidades na área de tecnologia.
-Através da coleta automática de vagas de múltiplas fontes, o sistema oferece uma API unificada que permite aos usuários
-consultar e filtrar as vagas de acordo com seus critérios específicos, facilitando o processo de encontrar a vaga ideal.
+As vagas de desenvolvimento de software estão espalhadas por várias plataformas. O Vagas Dev coleta
+automaticamente as vagas dessas fontes, guarda tudo em um único banco e permite consultar e filtrar por cargo,
+empresa, nível, modalidade (remoto, híbrido, presencial), local e vagas para pessoas com deficiência.
 
-A ideia é facilitar a vida de quem está procurando emprego na área de tecnologia, permitindo filtrar por critérios como
-localização, tipo de trabalho (remoto, híbrido, presencial) e palavras-chave, entre outras funcionalidades.
+O sistema é formado por uma **API REST**, que busca vagas novas periodicamente em segundo plano, e por uma
+**interface web** para navegar pelas vagas e abrir a candidatura no site de origem. Os dois serviços são
+distribuídos como imagens Docker e podem ser hospedados por qualquer pessoa: veja [Execute você mesmo](do-it-yourself.md).
+Também existe uma instância pública:
 
-O sistema conta com uma página web para busca de vagas encontradas em um único lugar e uma API REST, ambos os serviços
-podem ser hospedados por qualquer pessoa, mais informações sobre isso podem ser encontradas em [Execute](/do-it-yourself).
-Porém, uma instância pública de cada serviço está disponível nos links abaixo:
-
-- [Página web](https://vagas.henriquesebastiao.com)
+- [Interface web](https://vagas.henriquesebastiao.com)
 - [API REST](https://vagas-api.henriquesebastiao.com)
 
 !!! warning
 
-    O sistema está na sua fase inicial de desenvolvimento. Novas fontes serão adicionadas em breve.
-    Caso queira contribuir, sinta-se à vontade para abrir um PR ou issue com sugestões!
+    O projeto está em fase inicial de desenvolvimento. Caso queira contribuir, abra uma issue ou PR no
+    [repositório](https://github.com/henriquesebastiao/vagas-dev).
 
 ## Funcionalidades
 
-- **Busca periódica automática** - scheduler configurável que roda em background e coleta novas vagas em intervalos definidos, sem intervenção manual
-- **Sem duplicação de vagas** - vagas já registradas são ignoradas automaticamente, garantindo que o banco nunca acumule duplicatas, independente de quantas vezes o scheduler seja executado
-- **API REST centralizada** - todas as vagas de todas as fontes acessíveis por um único endpoint, com filtros por palavra-chave, localização, tipo de trabalho e fonte
-- **Filtros disponíveis** - busque vagas podendo filtrar pelas seguintes características:
-  - **Palavra-chave** - busca no título da vaga
-  - **Localização** - filtra por cidade ou estado (ex: "São Paulo", "Goiás")
-  - **Tipo de trabalho** - filtra por `remote`, `hybrid` ou `on-site`
-  - **Fonte** - filtra por plataforma de origem (ex: `gupy`, `linkedin`, etc.)
-  - **Vagas para pessoas com deficiência** - filtro específico para vagas que aceitam candidaturas de pessoas com deficiência
-  - **Paginação** - controle o número de resultados retornados e a partir de qual posição começar (limit/offset)
-- **Trigger manual de sync** - é possível disparar uma sincronização sob demanda via endpoint, sem precisar esperar o próximo ciclo do scheduler
-- **Arquitetura extensível** - adicionar uma nova fonte de vagas exige apenas criar um novo scraper herdando da classe base; toda a lógica de persistência e deduplicação já está pronta
+- **Busca periódica automática**: a API coleta vagas novas assim que inicia e depois a cada `INTERVAL_SYNC` minutos, sem intervenção manual.
+- **Sem vagas duplicadas**: vagas já registradas (mesmo ID externo e mesma fonte) são ignoradas, não importa quantas vezes a coleta rode.
+- **Nível da vaga deduzido do título**: estágio, júnior, pleno ou sênior, quando o título indica.
+- **API REST centralizada**: todas as vagas de todas as fontes em um único endpoint, com filtros por texto no título, empresa, fonte, local, modalidade, nível e vagas PCD, além de paginação. Veja os [endpoints](api/endpoints.md).
+- **Sincronização manual**: dispare uma coleta sob demanda por endpoint, sem esperar o próximo ciclo.
+- **Interface web**: lista de vagas com filtros, painel de detalhes, tema claro e escuro e layout para celular.
+- **Arquitetura extensível**: uma nova fonte exige apenas um novo scraper; persistência e deduplicação já estão prontas.
 
-## Fontes Suportadas
+## Fontes suportadas
 
-- [x] Gupy (via API)
-- [x] LinkedIn (via scraping)
+| Fonte    | Método                      | Status                                                               |
+|----------|-----------------------------|----------------------------------------------------------------------|
+| Gupy     | API pública                 | Indisponível: o endpoint usado pelo scraper passou a responder 404   |
+| LinkedIn | Scraping da página de busca | Disponível (vagas remotas; sem empresa e descrição)                  |
 
-## Tecnologias Utilizadas
+## Tecnologias utilizadas
 
-Abaixo estão listadas as principais tecnologias utilizadas para o desenvolvimento deste sistema.
-
-- **FastAPI** - API REST assíncrona
-- **SQLAlchemy** - ORM e acesso ao banco de dados
-- **APScheduler** - agendamento de tarefas em background
-- **httpx** - cliente HTTP assíncrono para os scrapers
-- **Pydantic** - validação e serialização de dados
-- **NextJS** - Interface Web
+- **FastAPI**: API REST assíncrona
+- **SQLAlchemy (async) + Alembic**: ORM, acesso ao banco e migrations
+- **PostgreSQL**: banco de dados
+- **APScheduler**: agendamento das coletas
+- **httpx + BeautifulSoup**: requisições HTTP e scraping
+- **Pydantic**: validação e serialização de dados
+- **Next.js + React**: interface web (exportada como site estático)
+- **Docker**: execução da API, da interface e do banco

@@ -4,8 +4,15 @@ icon: lucide/play
 
 # Execute você mesmo
 
-Casa você queira, por algum motivo, executar sua própria instância do projeto basta fazer isso via Docker Compose
-seguindo os passos abaixo.
+Você pode executar a sua própria instância do Vagas Dev com Docker Compose, usando as imagens publicadas a cada
+release no GitHub Container Registry:
+
+| Imagem                                     | Conteúdo                                 | Porta  |
+|--------------------------------------------|------------------------------------------|--------|
+| `ghcr.io/henriquesebastiao/vagas-dev/api`  | API REST e coleta periódica de vagas     | `8000` |
+| `ghcr.io/henriquesebastiao/vagas-dev/ui`   | Interface web (site estático em nginx)   | `3000` |
+
+Além delas é necessário um PostgreSQL. As tags disponíveis são `latest` e a versão de cada release.
 
 ## Arquivo `docker-compose.yml`
 
@@ -58,14 +65,16 @@ volumes:
   pgdata:
 ```
 
-Este arquivo `docker-compose.yml` quando executado irá criar três containers, sendo eles a API REST, a interface web e o banco de dados, respectivamente.
+Esse arquivo cria três containers: a API, a interface web e o banco de dados. A API fica em
+`http://localhost:8000` e a interface em `http://localhost:3000`.
 
-A API fica em `http://localhost:8000` e a interface em `http://localhost:3000`. Para publicar com domínio e HTTPS, aponte o seu proxy reverso (Traefik, Caddy, Nginx Proxy Manager etc.) para as portas `8000` (API) e `3000` (interface) e defina `NEXT_PUBLIC_API_URL` com o endereço público da API. Os dois containers têm healthcheck (`/health` na API).
+Se você já tem um compose com outros serviços, basta copiar os três serviços (e o volume) para ele. Ajuste os nomes
+como preferir, lembrando que o host em `DATABASE_URL` deve ser o nome do serviço do banco.
 
-## Varáveis de ambiente
+## Variáveis de ambiente
 
-Crie um arquivo `.env` no qual vão estar todas as variáveis de ambiente necessárias para o funcionamento do sistema.
-Crie o arquivo com o seguinte conteúdo:
+Crie um arquivo `.env` na mesma pasta do `docker-compose.yml` com o conteúdo abaixo. A API e o banco o leem pelo
+`env_file`, e o Docker Compose usa `NEXT_PUBLIC_API_URL` para preencher a variável do serviço `ui`.
 
 ```dotenv
 POSTGRES_DB="vagas-db"
@@ -79,7 +88,6 @@ DATABASE_URL="postgresql+psycopg://postgres:password@database:5432/vagas-db"
 
 # App
 INTERVAL_SYNC="30" # Intervalo de sincronização em minutos
-
 
 # UI
 NEXT_PUBLIC_API_URL="http://localhost:8000"
@@ -100,21 +108,49 @@ Abaixo a descrição de cada variável:
 
 ### Aplicação
 
-| Variável        | Descrição                                                      |
-|-----------------|----------------------------------------------------------------|
+| Variável        | Descrição |
+|-----------------|-----------|
 | `INTERVAL_SYNC` | Intervalo em minutos entre cada ciclo de busca por novas vagas. A primeira busca acontece assim que a API inicia |
 | `WORKERS`       | Opcional. Número de processos da API (padrão `1`). Mantenha `1`: cada processo roda o seu próprio agendador, e mais de um duplicaria as buscas |
 
 ### Interface web
 
-| Variável              | Descrição                                                                                                                          |
-|-----------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| Variável              | Descrição |
+|-----------------------|-----------|
 | `NEXT_PUBLIC_API_URL` | URL da API como o navegador do usuário a acessa — em produção aponte para o domínio da sua API; localmente use `http://localhost:8000`. Não use o nome do container (ex.: `http://api:8000`), pois quem faz as requisições é o navegador. O container da interface lê esta variável ao iniciar, sem precisar de novo build |
 
 ## Executando
 
-Após criar os arquivos `docker-compose.yml` e `.env`, agora você pode executar os container do sistema com o comando:
+Com os arquivos `docker-compose.yml` e `.env` criados, suba os containers:
 
 ```shell
-docker compose -f docker-compose.yml up -d
+docker compose up -d
 ```
+
+Ao iniciar, a API aplica as migrations do banco e faz a primeira coleta de vagas; depois repete a coleta a cada
+`INTERVAL_SYNC` minutos. Acompanhe pelos logs:
+
+```shell
+docker compose logs -f api
+```
+
+Os containers da API e da interface têm healthcheck: `docker compose ps` mostra `healthy` quando estão prontos.
+
+## Publicando com domínio e HTTPS
+
+O projeto não inclui proxy reverso. Use o que você já tem no servidor (Traefik, Caddy, Nginx Proxy Manager etc.):
+
+1. Aponte um domínio para a API (porta `8000`) e outro para a interface (porta `3000`).
+2. Defina `NEXT_PUBLIC_API_URL` com o endereço público da API, por exemplo `https://vagas-api.seudominio.com`.
+3. Recrie o container da interface para aplicar o valor: `docker compose up -d ui`.
+
+Se o proxy estiver na mesma rede Docker, as linhas `ports` da API e da interface podem ser removidas.
+
+## Atualizando
+
+```shell
+docker compose pull
+docker compose up -d
+```
+
+As migrations de banco de uma nova versão são aplicadas automaticamente quando a API reinicia.

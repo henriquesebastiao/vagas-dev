@@ -4,54 +4,55 @@ icon: lucide/milestone
 
 # Endpoints
 
-## Jobs
+Os exemplos usam `http://localhost:8000`; troque pelo endereço da sua instância.
+
+## Vagas
 
 ### Listar vagas
 
-**GET** `http://localhost:8000/jobs`
+**GET** `/jobs`
 
-Retorna uma lista de vagas de trabalho encontradas e registradas no banco de dados, com suporte a diversos filtros para refinar a busca.
+Retorna as vagas registradas no banco, da encontrada mais recentemente para a mais antiga. Todos os filtros são
+opcionais e podem ser combinados.
 
 #### Parâmetros de consulta
 
-| Parâmetro        | Tipo   | Descrição                                                          | Exemplo de valor |
-|------------------|--------|--------------------------------------------------------------------|------------------|
-| `keyword`        | string | Busca no título e descrição da vaga                                | "python"         |
-| `source`         | string | Filtra por fonte (`gupy`, etc.)                                    | "gupy"           |
-| `location`       | string | Filtra por cidade ou estado                                        | "São Paulo"      |
-| `workplace_type` | string | `remote`, `hybrid` ou `on-site`                                    | "remote"         |
-| `for_pcd`        | bool   | Filtra vagas para pessoas com deficiência                          | true             |
-| `level`          | string | Nível da vaga (`junior`, `pleno`, `senior`, `estagio` e `trainee`) | "pleno"          |
-| `limit`          | int    | Máximo de resultados (padrão: 50)                                  | 20               |
-| `offset`         | int    | Paginação                                                          | 0                |
+| Parâmetro        | Tipo   | Descrição                                                              | Exemplo       |
+|------------------|--------|------------------------------------------------------------------------|---------------|
+| `keyword`        | string | Texto buscado no título da vaga, sem diferenciar maiúsculas (máx. 100) | `python`      |
+| `company`        | string | Texto buscado no nome da empresa (máx. 100)                            | `nubank`      |
+| `source`         | string | Fonte da vaga: `gupy` ou `linkedin`                                    | `linkedin`    |
+| `location`       | string | Texto buscado no local (cidade, estado ou país)                        | `São Paulo`   |
+| `workplace_type` | string | Modalidade: `remote`, `hybrid` ou `on-site`                            | `remote`      |
+| `level`          | string | Nível: `estagio`, `junior`, `pleno`, `senior` ou `trainee`             | `pleno`       |
+| `for_pcd`        | bool   | `true` para apenas vagas para pessoas com deficiência                  | `true`        |
+| `limit`          | int    | Máximo de resultados (padrão `50`, máximo `200`)                       | `20`          |
+| `offset`         | int    | Quantidade de vagas a pular, para paginação (padrão `0`)               | `40`          |
 
-#### Request
+Para percorrer todas as vagas, aumente `offset` de `limit` em `limit` até receber uma lista com menos itens que `limit`.
+
+#### Requisição
 
 === "Shell"
 
     ```bash
     curl -s \
       -H "accept: application/json" \
-      "http://127.0.0.1:8000/jobs?keyword=python&limit=10"
+      "http://localhost:8000/jobs?keyword=python&level=pleno&limit=10"
     ```
 
-=== ":fontawesome-regular-python: Python"
+=== ":fontawesome-brands-python: Python"
 
     ```python
-    import requests
-    
-    url = 'http://127.0.0.1:8000/jobs'
-    
-    headers = {'accept': 'application/json'}
-    params = {
-        'keyword': 'python',
-        'limit': 10,
-    }
-    
-    response = requests.get(url, headers=headers, params=params)
-    
-    print(response.text)
+    import httpx
 
+    response = httpx.get(
+        'http://localhost:8000/jobs',
+        params={'keyword': 'python', 'level': 'pleno', 'limit': 10},
+    )
+
+    for job in response.json():
+        print(job['title'], job['url'])
     ```
 
 #### Resposta
@@ -63,54 +64,85 @@ Retorna uma lista de vagas de trabalho encontradas e registradas no banco de dad
     "external_id": "12345",
     "keyword": "python",
     "source": "gupy",
-    "title": "Desenvolvedor Python",
+    "title": "Desenvolvedor Python Pleno",
     "company": "Tech Company",
-    "location": "São Paulo",
-    "url": "https://www.gupy.io/vagas/12345",
+    "location": "São Paulo, SP, Brasil",
+    "url": "https://techcompany.gupy.io/jobs/12345",
     "description": "Vaga para desenvolvedor Python com experiência em FastAPI.",
     "workplace_type": "remote",
-    "published_at": "2024-05-30T10:00:00Z",
-    "end_applications": "2024-06-30T23:59:59Z",
-    "found_at": "2024-06-01T12:00:00Z",
+    "published_at": "2026-11-10T10:00:00",
+    "end_applications": "2026-12-10T23:59:59",
+    "found_at": "2026-11-11T12:00:00",
     "for_pcd": false,
     "level": "pleno"
-  },
-  ...
+  }
 ]
 ```
 
-#### Responses
+| Campo              | Descrição                                                                    |
+|--------------------|------------------------------------------------------------------------------|
+| `id`               | ID da vaga no banco do Vagas Dev                                             |
+| `external_id`      | ID da vaga na fonte de origem                                                |
+| `keyword`          | Termo de busca que encontrou a vaga                                          |
+| `source`           | Fonte da vaga (`gupy` ou `linkedin`)                                         |
+| `title`            | Título da vaga                                                               |
+| `company`          | Empresa contratante, ou `null` quando a fonte não informa (LinkedIn)         |
+| `location`         | Local da vaga                                                                |
+| `url`              | Página da vaga na fonte de origem, onde é feita a candidatura                |
+| `description`      | Descrição da vaga, ou `null` quando a fonte não informa (LinkedIn)           |
+| `workplace_type`   | `remote`, `hybrid`, `on-site` ou `null`                                      |
+| `published_at`     | Data de publicação na fonte, ou `null`                                       |
+| `end_applications` | Prazo para candidatura, ou `null`                                            |
+| `found_at`         | Data em que a vaga foi encontrada pelo Vagas Dev                             |
+| `for_pcd`          | `true` se a vaga é destinada a pessoas com deficiência                       |
+| `level`            | Nível deduzido do título (`estagio`, `junior`, `pleno`, `senior`, `trainee`) ou `null` |
 
-| Código | Descrição                        |
-|--------|----------------------------------|
-| `200`  | Requisição bem-sucedida          |
-| `422`  | Parâmetros de consulta inválidos |
+#### Códigos de resposta
+
+| Código | Descrição                                                                 |
+|--------|---------------------------------------------------------------------------|
+| `200`  | Requisição bem-sucedida (a lista pode vir vazia)                          |
+| `422`  | Parâmetro inválido, como `level` fora da lista ou `limit` acima de `200`  |
 
 ### Disparar sincronização manual
 
-**POST** `http://localhost:8000/jobs/sync/{source}`
+**POST** `/jobs/sync/{source}`
 
-Permite disparar uma sincronização manual de uma fonte específica, sem precisar esperar o próximo ciclo do scheduler. Isso é útil para testar a integração de uma nova fonte ou forçar uma atualização imediata.
+Dispara uma coleta de vagas da fonte informada sem esperar o próximo ciclo automático. A coleta roda em segundo
+plano: a resposta chega na hora e as vagas novas aparecem em `GET /jobs` assim que a coleta termina.
 
 #### Parâmetros de caminho
 
-| Parâmetro | Tipo   | Descrição                         | Exemplo de valor |
-|-----------|--------|-----------------------------------|------------------|
-| `source`  | string | Fonte de vagas a ser sincronizada | "gupy"           |
+| Parâmetro | Tipo   | Descrição                               | Exemplo    |
+|-----------|--------|-----------------------------------------|------------|
+| `source`  | string | Fonte a coletar: `gupy` ou `linkedin`   | `linkedin` |
+
+#### Requisição
+
+```bash
+curl -s -X POST "http://localhost:8000/jobs/sync/linkedin"
+```
 
 #### Resposta
 
 ```json
 {
-  "message": "Sincronização da fonte 'gupy' iniciada com sucesso."
+  "message": "Sync de 'linkedin' iniciado em background."
 }
 ```
 
-## Fontes
+#### Códigos de resposta
 
-**GET** `http://localhost:8000/jobs/sources`
+| Código | Descrição                    |
+|--------|------------------------------|
+| `202`  | Coleta iniciada              |
+| `422`  | Fonte inexistente            |
 
-Retorna uma lista das fontes de vagas integradas ao sistema, juntamente com a quantidade de vagas registradas para cada fonte.
+### Listar fontes
+
+**GET** `/jobs/sources`
+
+Retorna as fontes que já têm vagas registradas e a quantidade de vagas de cada uma.
 
 #### Resposta
 
@@ -118,21 +150,20 @@ Retorna uma lista das fontes de vagas integradas ao sistema, juntamente com a qu
 [
   {
     "source": "gupy",
-    "job_count": 120
+    "count": 120
   },
   {
     "source": "linkedin",
-    "job_count": 80
-  },
-  ...
+    "count": 342
+  }
 ]
 ```
 
 ## Health
 
-**GET** `http://localhost:8000/health`
+**GET** `/health`
 
-Retorna o status de saúde da aplicação, indicando se está funcionando corretamente.
+Indica se a API está no ar. É o endpoint usado pelo healthcheck da imagem Docker.
 
 #### Resposta
 
