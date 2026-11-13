@@ -3,12 +3,16 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { RefreshCw } from "lucide-react";
-import { fetchJobs, fetchSources, triggerSync } from "@/lib/api";
+import { checkHealth, fetchJobs, fetchSources, triggerSync } from "@/lib/api";
 import { PAGE_SIZE, formatNumber } from "@/lib/constants";
 import Header from "@/components/Header";
 import Filters from "@/components/Filters";
 import JobCard from "@/components/JobCard";
 import JobDetail from "@/components/JobDetail";
+import Maintenance from "@/components/Maintenance";
+
+// Intervalo entre as verificações de volta da API durante a manutenção.
+const HEALTH_POLL_MS = 20000;
 
 export default function Home() {
   const [jobs, setJobs] = useState([]);
@@ -18,17 +22,38 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
-  const [error, setError] = useState(null);
+  const [maintenance, setMaintenance] = useState(false);
   const [notice, setNotice] = useState(null);
   const [syncing, setSyncing] = useState(false);
 
   const handleFilterChange = useCallback((next) => setFilters(next), []);
 
+  // Recarrega as fontes ao abrir a página e sempre que a API volta.
   useEffect(() => {
+    if (maintenance) return;
     fetchSources()
       .then(setSources)
-      .catch(() => setSources([]));
-  }, []);
+      .catch(() => {
+        setSources([]);
+        setMaintenance(true);
+      });
+  }, [maintenance]);
+
+  // Em manutenção, verifica periodicamente se a API voltou. Ao sair da
+  // manutenção os filtros são remontados e recarregam a lista.
+  useEffect(() => {
+    if (!maintenance) return;
+    const check = () =>
+      checkHealth()
+        .then(() => setMaintenance(false))
+        .catch(() => {});
+    const timer = setInterval(check, HEALTH_POLL_MS);
+    window.addEventListener("online", check);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("online", check);
+    };
+  }, [maintenance]);
 
   // Recarrega a primeira página sempre que os filtros mudam.
   useEffect(() => {
@@ -41,17 +66,11 @@ export default function Home() {
         if (cancelled) return;
         setJobs(data);
         setHasMore(data.length === PAGE_SIZE);
-        setError(null);
         setSelected((prev) =>
           prev && data.some((j) => j.id === prev.id) ? prev : null,
         );
       })
-      .catch(() => {
-        if (cancelled) return;
-        setError(
-          "Não foi possível carregar as vagas. A API pode estar fora do ar; tente de novo em alguns minutos.",
-        );
-      })
+      .catch(() => !cancelled && setMaintenance(true))
       .finally(() => !cancelled && setLoading(false));
 
     return () => {
@@ -73,7 +92,7 @@ export default function Home() {
       setJobs((prev) => [...prev, ...data]);
       setHasMore(data.length === PAGE_SIZE);
     } catch {
-      setError("Não foi possível carregar mais vagas.");
+      setMaintenance(true);
     } finally {
       setLoadingMore(false);
     }
@@ -87,10 +106,19 @@ export default function Home() {
         "Busca na Gupy iniciada. As vagas novas aparecem aqui em alguns minutos.",
       );
     } catch {
-      setNotice("Não foi possível iniciar a busca agora.");
+      setMaintenance(true);
     } finally {
       setSyncing(false);
     }
+  }
+
+  if (maintenance) {
+    return (
+      <div className="app app--maintenance">
+        <Header sources={[]} />
+        <Maintenance />
+      </div>
+    );
   }
 
   return (
@@ -119,9 +147,8 @@ export default function Home() {
 
           <div className="list-body">
             {notice && <p className="list-notice">{notice}</p>}
-            {error && <div className="list-error">{error}</div>}
 
-            {!loading && !error && jobs.length === 0 && (
+            {!loading && jobs.length === 0 && (
               <div className="list-state">
                 Nenhuma vaga com esses filtros. Tente remover algum deles.
               </div>

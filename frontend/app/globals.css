@@ -351,15 +351,6 @@ a {
   text-align: center;
 }
 
-.list-error {
-  margin: 16px;
-  padding: 12px 14px;
-  border-radius: var(--radius);
-  background: var(--danger-soft);
-  color: var(--danger);
-  font-size: 13px;
-}
-
 .load-more {
   display: block;
   width: calc(100% - 40px);
@@ -655,6 +646,134 @@ a {
 
 .intro-links a:hover {
   text-decoration: underline;
+}
+
+/* ---------- Manutenção (API indisponível) ---------- */
+
+.app--maintenance {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.maintenance {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px var(--gutter);
+  text-align: center;
+  overflow-y: auto;
+}
+
+.maintenance__gears {
+  position: relative;
+  width: 120px;
+  height: 104px;
+  margin-bottom: 28px;
+  color: var(--accent);
+}
+
+.gear {
+  position: absolute;
+}
+
+.gear--big {
+  top: 0;
+  left: 0;
+}
+
+.gear--small {
+  right: 0;
+  bottom: 0;
+  color: var(--fg-3);
+}
+
+.maintenance__title {
+  margin: 0 0 10px;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.maintenance__text {
+  max-width: 46ch;
+  margin: 0 0 28px;
+  color: var(--fg-2);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.maintenance__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--fg-3);
+  font-size: 12px;
+}
+
+.pulse {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-reverse {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--accent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .gear--big {
+    animation: spin 6s linear infinite;
+  }
+  .gear--small {
+    animation: spin-reverse 3.6s linear infinite;
+  }
+  .pulse {
+    animation: pulse 1.8s ease-out infinite;
+  }
+  .maintenance > * {
+    animation: rise 480ms ease-out both;
+  }
+  .maintenance > :nth-child(2) {
+    animation-delay: 80ms;
+  }
+  .maintenance > :nth-child(3) {
+    animation-delay: 160ms;
+  }
+  .maintenance > :nth-child(4) {
+    animation-delay: 240ms;
+  }
 }
 
 /* ---------- Telas estreitas ---------- */

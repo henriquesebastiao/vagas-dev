@@ -80,7 +80,9 @@ Outros pontos:
 
 URL da API: `getApiUrl()` (`lib/constants.js`) usa `window.__VAGAS_CONFIG__.apiUrl`, definido em `/config.js`, e cai para `NEXT_PUBLIC_API_URL` do build. `public/config.js` é vazio; na imagem Docker, `frontend/docker-entrypoint.sh` o regenera a partir de `NEXT_PUBLIC_API_URL` ao iniciar o container, então a mesma imagem serve para qualquer API. Em componentes renderizados use o hook `useApiUrl()` (evita erro de hidratação). A URL é sempre a que o **navegador** acessa, nunca o nome do container.
 
-Deploy: Cloudflare Pages via `.github/workflows/deploy.yml` (após a CI na `main`) e imagem Docker (`frontend/Dockerfile`: build Node + nginx servindo `out/` na porta 3000, config em `frontend/nginx.conf`), publicada por `.github/workflows/build.yml` em cada release.
+Indisponibilidade da API: todas as chamadas passam por `request()` em `lib/api.js` (timeout de 15 s); qualquer falha coloca a página em modo manutenção (`components/Maintenance.js`), que nunca exibe erro e verifica `GET /health` a cada 20 s para voltar sozinha. Como a interface fica no Cloudflare Pages, ela continua no ar mesmo com a API desligada.
+
+Deploy: Cloudflare Pages via `.github/workflows/deploy.yml` (após a CI na `main`; secrets `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` e `NEXT_PUBLIC_API_URL`, que cai para `https://vagas-api.henriquesebastiao.com`; cabeçalhos em `frontend/public/_headers`) e imagem Docker (`frontend/Dockerfile`: build Node + nginx servindo `out/` na porta 3000, config em `frontend/nginx.conf`), publicada por `.github/workflows/build.yml` em cada release.
 
 ## Documentação
 

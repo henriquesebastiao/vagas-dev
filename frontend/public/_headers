@@ -1,0 +1,14 @@
+# Cabeçalhos do Cloudflare Pages (ignorado pelo nginx da imagem Docker).
+
+# Configuração de execução: sempre buscar a versão mais recente.
+/config.js
+  Cache-Control: no-cache
+
+# Arquivos com hash no nome podem ficar em cache para sempre.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
