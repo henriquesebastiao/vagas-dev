@@ -36,26 +36,16 @@ Porém, uma instância pública de cada serviço está disponível nos links aba
 
 !!! warning
 
-    O sistema está na sua fase inicial de desenvolvimento. Novas fontes e notificações em mensageiros serão adicionadas em breve.
+    O sistema está na sua fase inicial de desenvolvimento. Novas fontes serão adicionadas em breve.
     Caso queira contribuir, sinta-se à vontade para abrir um PR ou issue com sugestões!
-
-### Notificações
-
-Além de coletar as vagas, o sistema também possui uma funcionalidade de notificações, que pode ser configurada para enviar alertas em mensageiros como Telegram sempre que novas vagas que correspondam a palavras-chave específicas forem encontradas. Isso permite que os usuários fiquem informados em tempo real sobre oportunidades relevantes, sem precisar acessar a API constantemente.
-
-Para entrar para os grupos de notificações, basta clicar no link do mensageiro desejado:
-
-- :simple-telegram: [Telegram](https://t.me/+5faW_wL4ybNhMjY5)
-- :simple-discord: [Discord](https://discord.gg/MnnnvNQauf)
 
 ## Funcionalidades
 
 - **Busca periódica automática** - scheduler configurável que roda em background e coleta novas vagas em intervalos definidos, sem intervenção manual
-- **Notificações** - integração com Telegram para enviar alertas de novas vagas que correspondam a palavras-chave específicas
 - **Sem duplicação de vagas** - vagas já registradas são ignoradas automaticamente, garantindo que o banco nunca acumule duplicatas, independente de quantas vezes o scheduler seja executado
 - **API REST centralizada** - todas as vagas de todas as fontes acessíveis por um único endpoint, com filtros por palavra-chave, localização, tipo de trabalho e fonte
 - **Filtros disponíveis** - busque vagas podendo filtrar pelas seguintes características:
-  - **Palavra-chave** - busca no título e descrição da vaga
+  - **Palavra-chave** - busca no título da vaga
   - **Localização** - filtra por cidade ou estado (ex: "São Paulo", "Goiás")
   - **Tipo de trabalho** - filtra por `remote`, `hybrid` ou `on-site`
   - **Fonte** - filtra por plataforma de origem (ex: `gupy`, `linkedin`, etc.)

@@ -5,7 +5,6 @@ from loguru import logger
 from app.core.database import AsyncSessionLocal
 from app.core.settings import get_settings
 from app.keywords import KEYWORDS
-from app.notifiers import notify_new_jobs
 from app.scrapers import gupy, linkedin
 
 scheduler = AsyncIOScheduler()
@@ -36,13 +35,8 @@ async def run_linkedin_sync():
     logger.info(f'Sync LinkedIn finalizado. {count} novas vagas.')
 
 
-async def run_notify_new_jobs():
-    """Aciona o processo de notificação para novas vagas."""
-    await notify_new_jobs()
-
-
 def setup_scheduler():
-    # Roda a cada 30 minutos
+    # Roda a cada INTERVAL_SYNC minutos
     scheduler.add_job(
         run_gupy_sync,
         trigger=IntervalTrigger(minutes=settings.INTERVAL_SYNC),
@@ -58,16 +52,6 @@ def setup_scheduler():
         trigger=IntervalTrigger(minutes=settings.INTERVAL_SYNC),
         id='linkedin_sync',
         name='Linkedin Job Sync',
-        replace_existing=True,
-        max_instances=1,
-        misfire_grace_time=60,
-    )
-
-    scheduler.add_job(
-        run_notify_new_jobs,
-        trigger=IntervalTrigger(minutes=settings.INTERVAL_SYNC),
-        id='notify_new_jobs',
-        name='Notifica sobre novas vagas',
         replace_existing=True,
         max_instances=1,
         misfire_grace_time=60,

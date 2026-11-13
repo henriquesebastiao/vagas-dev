@@ -12,7 +12,6 @@ from app.api.routes import job
 from app.core.settings import get_settings
 from app.scheduler import scheduler, setup_scheduler
 from app.schemas.health import HealthOut
-from app.wrappers.discord_bot import bot
 
 settings = get_settings()
 
@@ -89,9 +88,6 @@ async def lifespan(app: FastAPI):
 
     if proc.returncode != 0:
         raise RuntimeError(f'Falha ao aplicar migrations:\n{stderr.decode()}')
-
-    # Inicia o bot do Discord
-    asyncio.create_task(bot.start(settings.DISCORD_TOKEN))
 
     setup_scheduler()
     yield

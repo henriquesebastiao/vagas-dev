@@ -44,12 +44,6 @@ class Job:
         init=False,
         server_default=func.now(tz=utc),
     )
-    telegram_notified: Mapped[bool] = mapped_column(
-        init=False, default=False, server_default='false'
-    )
-    discord_notified: Mapped[bool] = mapped_column(
-        init=False, default=False, server_default='false'
-    )
     for_pcd: Mapped[bool] = mapped_column(
         default=False, server_default='false'
     )

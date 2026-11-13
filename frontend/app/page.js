@@ -1,8 +1,10 @@
 "use client";
-// Página principal — orquestra todos os componentes e gerencia o estado global.
+// Página principal: guarda o estado dos filtros, da lista e da vaga aberta.
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { RefreshCw } from "lucide-react";
 import { fetchJobs, fetchSources, triggerSync } from "@/lib/api";
+import { PAGE_SIZE, formatNumber } from "@/lib/constants";
 import Header from "@/components/Header";
 import Filters from "@/components/Filters";
 import JobCard from "@/components/JobCard";
@@ -12,158 +14,153 @@ export default function Home() {
   const [jobs, setJobs] = useState([]);
   const [sources, setSources] = useState([]);
   const [selected, setSelected] = useState(null);
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
   const [error, setError] = useState(null);
+  const [notice, setNotice] = useState(null);
+  const [syncing, setSyncing] = useState(false);
 
-  const handleFilterChange = useCallback((newFilters) => {
-    setFilters(newFilters);
-  }, []);
+  const handleFilterChange = useCallback((next) => setFilters(next), []);
 
-  // Carrega as fontes uma vez ao abrir a página
   useEffect(() => {
     fetchSources()
       .then(setSources)
       .catch(() => setSources([]));
   }, []);
 
-  // Recarrega as vagas sempre que os filtros mudam
+  // Recarrega a primeira página sempre que os filtros mudam.
   useEffect(() => {
+    if (!filters) return;
     let cancelled = false;
+    setLoading(true);
 
     fetchJobs(filters)
       .then((data) => {
         if (cancelled) return;
         setJobs(data);
-        setLoading(false);
+        setHasMore(data.length === PAGE_SIZE);
         setError(null);
         setSelected((prev) =>
-          prev && data.find((j) => j.id === prev.id) ? prev : null,
+          prev && data.some((j) => j.id === prev.id) ? prev : null,
         );
       })
       .catch(() => {
         if (cancelled) return;
         setError(
-          "Não foi possível carregar as vagas. Verifique se a API está rodando.",
+          "Não foi possível carregar as vagas. A API pode estar fora do ar; tente de novo em alguns minutos.",
         );
-        setLoading(false);
-      });
+      })
+      .finally(() => !cancelled && setLoading(false));
 
     return () => {
       cancelled = true;
     };
   }, [filters]);
 
+  // Fecha o painel de leitura com Esc (útil no celular).
+  useEffect(() => {
+    const onKey = (e) => e.key === "Escape" && setSelected(null);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  async function loadMore() {
+    setLoadingMore(true);
+    try {
+      const data = await fetchJobs(filters, jobs.length);
+      setJobs((prev) => [...prev, ...data]);
+      setHasMore(data.length === PAGE_SIZE);
+    } catch {
+      setError("Não foi possível carregar mais vagas.");
+    } finally {
+      setLoadingMore(false);
+    }
+  }
+
   async function handleSync() {
-    await triggerSync("gupy");
-    fetchJobs(filters).then(setJobs);
+    setSyncing(true);
+    try {
+      await triggerSync("gupy");
+      setNotice(
+        "Busca na Gupy iniciada. As vagas novas aparecem aqui em alguns minutos.",
+      );
+    } catch {
+      setNotice("Não foi possível iniciar a busca agora.");
+    } finally {
+      setSyncing(false);
+    }
   }
 
   return (
-    <div
-      style={{
-        fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
-        background: "#0a0d14",
-        minHeight: "100vh",
-        color: "#f1f5f9",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <div className="app">
       <Header sources={sources} />
+      <Filters onChange={handleFilterChange} sources={sources} />
 
-      <div
-        style={{
-          display: "flex",
-          flex: 1,
-          overflow: "hidden",
-        }}
-      >
-        {/* Painel esquerdo — filtros + lista de vagas */}
-        <div
-          style={{
-            width: 450,
-            minWidth: 450,
-            borderRight: "1px solid rgba(255,255,255,0.07)",
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-            height: "calc(100vh - 105px)",
-          }}
-        >
-          <Filters
-            onChange={handleFilterChange}
-            onSync={handleSync}
-            totalJobs={jobs.length}
-            sources={sources}
-          />
+      <main className="workspace">
+        <section className="list-pane" aria-label="Vagas">
+          <div className="list-head">
+            <span className="mono">
+              {loading
+                ? "Carregando…"
+                : `${formatNumber(jobs.length)}${hasMore ? "+" : ""} vagas`}
+            </span>
+            <button
+              type="button"
+              className="link-button"
+              onClick={handleSync}
+              disabled={syncing}
+            >
+              <RefreshCw size={13} aria-hidden="true" />
+              {syncing ? "Iniciando…" : "Buscar vagas novas"}
+            </button>
+          </div>
 
-          {/* Lista de vagas com scroll */}
-          <div style={{ flex: 1, overflowY: "auto", padding: "8px 20px 20px" }}>
-            {loading && (
-              <div
-                style={{
-                  textAlign: "center",
-                  color: "#475569",
-                  marginTop: 48,
-                  fontSize: 14,
-                }}
-              >
-                Carregando vagas...
-              </div>
-            )}
-
-            {error && !loading && (
-              <div
-                style={{
-                  margin: "20px 0",
-                  padding: 16,
-                  background: "rgba(239,68,68,0.08)",
-                  border: "1px solid rgba(239,68,68,0.2)",
-                  borderRadius: 12,
-                  color: "#f87171",
-                  fontSize: 13,
-                }}
-              >
-                {error}
-              </div>
-            )}
+          <div className="list-body">
+            {notice && <p className="list-notice">{notice}</p>}
+            {error && <div className="list-error">{error}</div>}
 
             {!loading && !error && jobs.length === 0 && (
-              <div
-                style={{
-                  textAlign: "center",
-                  color: "#475569",
-                  marginTop: 60,
-                  fontSize: 14,
-                }}
-              >
-                Nenhuma vaga encontrada para esses filtros.
+              <div className="list-state">
+                Nenhuma vaga com esses filtros. Tente remover algum deles.
               </div>
             )}
 
-            {!loading &&
-              jobs.map((job) => (
-                <JobCard
-                  key={job.id}
-                  job={job}
-                  selected={selected?.id === job.id}
-                  onClick={setSelected}
-                />
-              ))}
+            {jobs.map((job) => (
+              <JobCard
+                key={job.id}
+                job={job}
+                selected={selected?.id === job.id}
+                onSelect={setSelected}
+              />
+            ))}
+
+            {hasMore && !loading && (
+              <button
+                type="button"
+                className="load-more"
+                onClick={loadMore}
+                disabled={loadingMore}
+              >
+                {loadingMore ? "Carregando…" : "Carregar mais vagas"}
+              </button>
+            )}
           </div>
-        </div>
+        </section>
 
-        {/* Painel direito — detalhes ou boas-vindas */}
-        <div style={{ height: "calc(100vh - 105px)", overflowY: "auto" }}>
-          <JobDetail job={selected} />
-        </div>
-      </div>
-
-      <style>{`
-        * { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
-        select option { background: #1e293b; }
-      `}</style>
+        <section
+          className={`detail-pane${selected ? " is-open" : ""}`}
+          aria-label="Detalhes da vaga"
+        >
+          <JobDetail
+            key={selected?.id}
+            job={selected}
+            sources={sources}
+            onBack={() => setSelected(null)}
+          />
+        </section>
+      </main>
     </div>
   );
 }

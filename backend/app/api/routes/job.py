@@ -4,7 +4,7 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, status
 from loguru import logger
 from sqlalchemy import func, select
 
-from app.enum import JobLevel, JobSource, Keyword, WorkplaceType
+from app.enum import JobLevel, JobSource, WorkplaceType
 from app.models import Job
 from app.schemas import Message
 from app.schemas.job import JobOut, SourceOut
@@ -18,7 +18,8 @@ router = APIRouter(prefix='/jobs', tags=['jobs'])
 async def list_jobs(
     session: Session,
     source: Annotated[JobSource | None, Query()] = None,
-    keyword: Annotated[Keyword | None, Query()] = None,
+    keyword: Annotated[str | None, Query(max_length=100)] = None,
+    company: Annotated[str | None, Query(max_length=100)] = None,
     location: Annotated[str | None, Query()] = None,
     workplace_type: Annotated[WorkplaceType | None, Query()] = None,
     for_pcd: Annotated[bool | None, Query()] = None,
@@ -31,7 +32,8 @@ async def list_jobs(
     Os seguintes filtros estão disponíveis:
 
     - **source**: filtra por fonte de onde a vaga foi coletada (ex: "gupy")
-    - **keyword**: busca por palavra-chave no título ou descrição da vaga
+    - **keyword**: busca por texto no título da vaga (ex: "python", "react")
+    - **company**: busca por texto no nome da empresa
     - **location**: filtra por localidade (ex: "Brasil", "São Paulo", etc.)
     - **workplace_type**: filtra por tipo de trabalho (ex: "remote", "hybrid", "on-site")
     - **for_pcd**: filtra por vagas destinadas a pessoas com deficiência (true/false)
@@ -45,8 +47,9 @@ async def list_jobs(
         source = source.value
         query = query.where(Job.source == source)
     if keyword:
-        keyword = keyword.value
         query = query.where(Job.title.ilike(f'%{keyword}%'))
+    if company:
+        query = query.where(Job.company.ilike(f'%{company}%'))
     if location:
         query = query.where(Job.location.ilike(f'%{location}%'))
     if workplace_type:

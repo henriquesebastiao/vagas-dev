@@ -16,27 +16,6 @@ class Settings(BaseSettings):
     INTERVAL_SYNC: int = 60  # Intervalo de execução dos jobs do scheduler
     DEBUG: bool = False
 
-    # Telegram
-    TELEGRAM_BOT_TOKEN: str = ''
-    TELEGRAM_CHAT_ID: str = ''
-    TELEGRAM_PYTHON_TOPIC_ID: str = ''
-    TELEGRAM_JAVA_TOPIC_ID: str = ''
-    TELEGRAM_GOLANG_TOPIC_ID: str = ''
-    TELEGRAM_FRONTEND_TOPIC_ID: str = ''
-    TELEGRAM_BACKEND_TOPIC_ID: str = ''
-    TELEGRAM_MAX_MESSAGE_LENGTH: int = 4096
-
-    # Discord
-    DISCORD_BOT_ID: str = ''
-    DISCORD_TOKEN: str = ''
-    DISCORD_GUILD_ID: str = ''
-    DISCORD_PYTHON_CHANNEL_ID: str = ''
-    DISCORD_JAVA_CHANNEL_ID: str = ''
-    DISCORD_GOLANG_CHANNEL_ID: str = ''
-    DISCORD_FRONTEND_CHANNEL_ID: str = ''
-    DISCORD_BACKEND_CHANNEL_ID: str = ''
-    DISCORD_MAX_DESCRIPTION_LENGTH: int = 1024
-
 
 @lru_cache
 def get_settings():

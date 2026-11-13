@@ -13,9 +13,6 @@ Este documento apresenta o roadmap de desenvolvimento do projeto, detalhando as 
     - [x] LinkedIn (via scraping)
 - [x] **Busca periódica automática** - scheduler configurável que roda em background e coleta novas vagas em intervalos definidos, sem intervenção manual;
 - [x] **Trigger manual de sync** - é possível disparar uma sincronização sob
-- [x] **Notificações** - integração com mensageiros para enviar alertas de novas vagas que correspondam a palavras-chave específicas:
-    - [x] Telegram
-    - [x] Discord
 - [x] **Sem duplicação de vagas** - vagas já registradas são ignoradas automaticamente, garantindo que o banco nunca acumule duplicatas, independente de quantas vezes o scheduler seja executado;
 - [x] **API REST centralizada** - todas as vagas de todas as fontes acessíveis por um único endpoint, com filtros por palavra-chave, localização, tipo de trabalho e fonte;
 - [ ] **Filtros avançados** - além dos filtros básicos, planeja-se adicionar opções como:

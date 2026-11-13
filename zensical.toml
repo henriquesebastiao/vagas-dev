@@ -17,7 +17,7 @@ site_name = "Vagas Dev"
 # meaningful description of the site content for use by search engines.
 #
 # Read more: https://zensical.org/docs/setup/basics/#site_description
-site_description = "API para busca de vagas de emprego para desenvolvedores e notificações de novas vagas."
+site_description = "API para busca de vagas de emprego para desenvolvedores."
 
 # The site_author attribute. This is used in the HTML head element.
 #
@@ -324,14 +324,6 @@ logo = "lucide/briefcase-business"
 [[project.extra.social]]
 icon = "fontawesome/brands/linkedin"
 link = "https://www.linkedin.com/in/henriquesebastiao"
-
-[[project.extra.social]]
-icon = "fontawesome/brands/discord"
-link = "https://discord.gg/MnnnvNQauf"
-
-[[project.extra.social]]
-icon = "fontawesome/brands/telegram"
-link = "https://t.me/+5faW_wL4ybNhMjY5"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/github"

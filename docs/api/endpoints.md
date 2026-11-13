@@ -72,7 +72,6 @@ Retorna uma lista de vagas de trabalho encontradas e registradas no banco de dad
     "published_at": "2024-05-30T10:00:00Z",
     "end_applications": "2024-06-30T23:59:59Z",
     "found_at": "2024-06-01T12:00:00Z",
-    "telegram_notified": false,
     "for_pcd": false,
     "level": "pleno"
   },

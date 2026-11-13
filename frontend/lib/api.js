@@ -1,45 +1,46 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+import { API_URL, PAGE_SIZE } from "@/lib/constants";
 
 /**
  * Busca vagas com filtros opcionais.
  * Qualquer filtro não preenchido é ignorado.
  */
-export async function fetchJobs(filters = {}) {
+export async function fetchJobs(filters = {}, offset = 0) {
   const params = new URLSearchParams();
 
-  if (filters.keyword) params.set("keyword", filters.keyword);
-  if (filters.level) params.set("level", filters.level);
-  if (filters.workplace_type)
-    params.set("workplace_type", filters.workplace_type);
-  if (filters.source) params.set("source", filters.source);
-  if (filters.company) params.set("company", filters.company);
-  if (filters.location) params.set("location", filters.location);
+  for (const key of [
+    "keyword",
+    "level",
+    "workplace_type",
+    "source",
+    "company",
+    "location",
+  ]) {
+    const value = filters[key]?.trim?.() ?? filters[key];
+    if (value) params.set(key, value);
+  }
   if (filters.for_pcd) params.set("for_pcd", "true");
 
-  params.set("limit", filters.limit || 50);
-  params.set("offset", filters.offset || 0);
+  params.set("limit", PAGE_SIZE);
+  params.set("offset", offset);
 
-  const res = await fetch(`${BASE_URL}/jobs?${params}`);
+  const res = await fetch(`${API_URL}/jobs?${params}`);
   if (!res.ok) throw new Error("Erro ao buscar vagas");
   return res.json();
 }
 
-/**
- * Busca as fontes disponíveis e a contagem de vagas de cada uma.
- * Usado para exibir os stats no header e popular o filtro de fonte.
- */
+/** Busca as fontes disponíveis e a contagem de vagas de cada uma. */
 export async function fetchSources() {
-  const res = await fetch(`${BASE_URL}/jobs/sources`);
+  const res = await fetch(`${API_URL}/jobs/sources`);
   if (!res.ok) throw new Error("Erro ao buscar fontes");
   return res.json();
 }
 
 /**
  * Dispara uma sincronização manual de uma fonte.
- * A FastAPI roda o sync em background e retorna imediatamente.
+ * A API roda o sync em background e responde imediatamente.
  */
 export async function triggerSync(source = "gupy") {
-  const res = await fetch(`${BASE_URL}/jobs/sync/${source}`, {
+  const res = await fetch(`${API_URL}/jobs/sync/${source}`, {
     method: "POST",
   });
   if (!res.ok) throw new Error("Erro ao disparar sync");

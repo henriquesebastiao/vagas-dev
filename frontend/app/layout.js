@@ -1,22 +1,27 @@
-// Layout global — envolve todas as páginas do Next.js.
-// Aqui você configura o <head> (título, fontes, favicon) e estilos globais.
+import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import "./globals.css";
 
-import { DM_Sans } from "next/font/google";
-
-// Importa a fonte DM Sans do Google Fonts de forma otimizada
-const dmSans = DM_Sans({
+const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600"],
+  variable: "--font-plex-sans",
+});
+
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-plex-mono",
 });
 
 export const metadata = {
-  title: "Vagas DEV",
-  description: "Agregador automático de vagas de emprego",
+  title: "Vagas Dev",
+  description:
+    "Vagas para desenvolvedores no Brasil, coletadas da Gupy e do LinkedIn e atualizadas automaticamente.",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className={`${plexSans.variable} ${plexMono.variable}`}>
       <head>
         <script
           defer
@@ -24,9 +29,7 @@ export default function RootLayout({ children }) {
           data-website-id="7562705b-6fb8-44ad-a836-0ba266cdfcab"
         />
       </head>
-      <body className={dmSans.className} style={{ margin: 0, padding: 0 }}>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

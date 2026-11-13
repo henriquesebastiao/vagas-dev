@@ -1,48 +1,62 @@
-// Configurações visuais e helpers compartilhados entre componentes.
+// Rótulos e formatadores compartilhados entre componentes.
 
-export const LEVEL_CONFIG = {
-  junior: { bg: "rgba(34,197,94,0.12)", text: "#4ade80", label: "Júnior" },
-  pleno: { bg: "rgba(59,130,246,0.12)", text: "#60a5fa", label: "Pleno" },
-  senior: { bg: "rgba(168,85,247,0.12)", text: "#c084fc", label: "Sênior" },
-  estagio: { bg: "rgba(251,191,36,0.12)", text: "#fbbf24", label: "Estágio" },
-  trainee: { bg: "rgba(251,146,60,0.12)", text: "#fb923c", label: "Trainee" },
+export const LEVEL_LABELS = {
+  estagio: "Estágio",
+  trainee: "Trainee",
+  junior: "Júnior",
+  pleno: "Pleno",
+  senior: "Sênior",
 };
 
-export const WORKPLACE_CONFIG = {
-  remote: { icon: "🌐", label: "Remoto" },
-  hybrid: { icon: "🔀", label: "Híbrido" },
-  "on-site": { icon: "🏢", label: "Presencial" },
+export const WORKPLACE_LABELS = {
+  remote: "Remoto",
+  hybrid: "Híbrido",
+  "on-site": "Presencial",
 };
 
-/** Transforma uma data ISO em tempo relativo legível. */
+export const SOURCE_LABELS = {
+  gupy: "Gupy",
+  linkedin: "LinkedIn",
+};
+
+export const PAGE_SIZE = 50;
+
+export const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+/** Transforma uma data ISO em tempo relativo curto ("há 3 h"). */
 export function timeAgo(dateStr) {
-  const diff = Math.floor((Date.now() - new Date(dateStr)) / 60000);
-  if (diff < 60) return `${diff}min atrás`;
-  if (diff < 1440) return `${Math.floor(diff / 60)}h atrás`;
-  return `${Math.floor(diff / 1440)}d atrás`;
+  const date = new Date(dateStr);
+  if (Number.isNaN(date.getTime())) return "";
+  const minutes = Math.max(0, Math.floor((Date.now() - date) / 60000));
+  if (minutes < 1) return "agora";
+  if (minutes < 60) return `há ${minutes} min`;
+  if (minutes < 1440) return `há ${Math.floor(minutes / 60)} h`;
+  return `há ${Math.floor(minutes / 1440)} d`;
 }
 
-/** Componente Badge reutilizável para tags coloridas. */
-export function Badge({
-  children,
-  bg,
-  color,
-  fontSize = 11,
-  padding = "3px 9px",
-}) {
-  return (
-    <span
-      style={{
-        fontSize,
-        fontWeight: 600,
-        letterSpacing: "0.04em",
-        padding,
-        borderRadius: 20,
-        background: bg,
-        color,
-      }}
-    >
-      {children}
-    </span>
-  );
+const dateFormat = new Intl.DateTimeFormat("pt-BR", {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+});
+
+/** Formata uma data ISO como "12 de mar. de 2026"; null vira "—". */
+export function formatDate(dateStr) {
+  if (!dateStr) return "—";
+  const date = new Date(dateStr);
+  return Number.isNaN(date.getTime()) ? "—" : dateFormat.format(date);
+}
+
+export function formatNumber(n) {
+  return Number(n || 0).toLocaleString("pt-BR");
+}
+
+/** Extrai o domínio de uma URL para mostrar onde a candidatura acontece. */
+export function hostOf(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
 }

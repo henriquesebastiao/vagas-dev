@@ -18,13 +18,13 @@
 
 ## ✨ O que e porquê?
 
-Um sistema de busca de vagas de emprego para desenvolvedores e notificações via apps de mensagens.
+Um sistema de busca de vagas de emprego para desenvolvedores.
 
 Num cenário onde as vagas de trabalho em desenvolvimento de software estão cada vez mais dispersas entre diversas plataformas e sites, este projeto surge como uma solução para centralizar a busca por oportunidades na área de tecnologia. Através da coleta automática de vagas de múltiplas fontes, o sistema oferece uma API unificada que permite aos usuários consultar e filtrar as vagas de acordo com seus critérios específicos, facilitando o processo de encontrar a vaga ideal.
 
 A ideia é facilitar a vida de quem está procurando emprego na área de tecnologia, permitindo filtrar por critérios como localização, tipo de trabalho (remoto, híbrido, presencial) e palavras-chave, entre outras funcionalidades.
 
-Esse sistema é composto por uma API REST que busca por novas vagas de trabalho periódicamente em fontes como [Gupy](https://portal.gupy.io/) e [LinkedIn](https://www.linkedin.com) em background e notifica sobre as novas vagas encontradas via apps de mensagens como Telegram e Discord.
+Esse sistema é composto por uma API REST que busca por novas vagas de trabalho periódicamente em fontes como [Gupy](https://portal.gupy.io/) e [LinkedIn](https://www.linkedin.com) em background e as disponibiliza em uma interface web e em uma API REST.
 
 Os links de acesso ao sistema estão listados abaixo:
 
@@ -33,26 +33,16 @@ Os links de acesso ao sistema estão listados abaixo:
 - [API](https://vagas-api.henriquesebastiao.com/)
 
 > [!IMPORTANT]
-> O sistema está na sua fase inicial de desenvolvimento. Novas fontes e notificações em mensageiros podem adicionadas em breve.
+> O sistema está na sua fase inicial de desenvolvimento. Novas fontes podem ser adicionadas em breve.
 > Caso queira contribuir com desenvolvimento, relatar bugs ou sugerir melhorias, sinta-se à vontade para abrir um PR ou issue com sua contribuição!
-
-## 🔔 Notificações
-
-Para receber alerta das vagas encontradas pelo sistema faça parte do grupo de alerta no seu app mensageiro de preferência entre os listados abaixo:
-
-> O link de cada um é o link de convite para o grupo ou servidor.
-
-- [Telegram](https://t.me/+5faW_wL4ybNhMjY5)
-- [Discord](https://discord.gg/MnnnvNQauf)
 
 ## Funcionalidades
 
 - **Busca periódica automática** — scheduler configurável que roda em background e coleta novas vagas em intervalos definidos, sem intervenção manual
-- **Notificações** — integração com Telegram e Discord para enviar alerta de novas vagas que correspondam a palavras-chave específicas
 - **Sem duplicação de vagas** — vagas já registradas são ignoradas automaticamente, garantindo que o banco nunca acumule duplicatas, independente de quantas vezes o scheduler seja executado
 - **API REST centralizada** — todas as vagas de todas as fontes acessíveis por um único endpoint, com filtros por palavra-chave, localização, tipo de trabalho e fonte
 - **Filtros disponíveis** - busque vagas podendo filtrar pelas seguintes características:
-  - **Palavra-chave** — busca no título e descrição da vaga
+  - **Palavra-chave** — busca no título da vaga
   - **Localização** — filtra por cidade ou estado (ex: "São Paulo", "Goiás")
   - **Tipo de trabalho** — filtra por `remote`, `hybrid` ou `on-site`
   - **Fonte** — filtra por plataforma de origem (ex: `gupy`, `linkedin`, etc.)

@@ -4,7 +4,7 @@ Este arquivo orienta o Claude Code (claude.ai/code) ao trabalhar neste repositó
 
 ## Visão geral
 
-**Vagas Dev** coleta periodicamente vagas de emprego para desenvolvedores (Gupy via API pública, LinkedIn via scraping de HTML), persiste em PostgreSQL, expõe uma API REST (FastAPI) e envia notificações das vagas novas para Telegram (tópicos de um grupo) e Discord (canais de um servidor). Há também uma interface web em Next.js.
+**Vagas Dev** coleta periodicamente vagas de emprego para desenvolvedores (Gupy via API pública, LinkedIn via scraping de HTML), persiste em PostgreSQL, expõe uma API REST (FastAPI) e uma interface web em Next.js para listar e filtrar as vagas. Não há envio de notificações (a integração com Telegram/Discord foi removida).
 
 Código, comentários, docstrings, logs, mensagens de commit/changelog e documentação são escritos em **português**. Mantenha esse padrão.
 
@@ -40,18 +40,17 @@ Tudo do backend fica em `backend/app/`. O app é executado com `--app-dir backen
 
 Fluxo principal:
 
-1. **Startup** (`main.py`, `lifespan`): configura loguru (intercepta todos os loggers stdlib; grava também em `logs/app.log`), **executa `alembic upgrade head` como subprocesso**, inicia o bot do Discord em background e chama `setup_scheduler()`.
-2. **Scheduler** (`scheduler.py`, APScheduler): três jobs com o mesmo intervalo `INTERVAL_SYNC` (minutos) — sync Gupy, sync LinkedIn e notificação de vagas novas.
+1. **Startup** (`main.py`, `lifespan`): configura loguru (intercepta todos os loggers stdlib; grava também em `logs/app.log`), **executa `alembic upgrade head` como subprocesso** e chama `setup_scheduler()`.
+2. **Scheduler** (`scheduler.py`, APScheduler): dois jobs com o mesmo intervalo `INTERVAL_SYNC` (minutos): sync Gupy e sync LinkedIn.
 3. **Scrapers** (`scrapers/`): cada fonte herda de `BaseJobScraper` (`scrapers/base.py`) e implementa apenas `fetch_jobs() -> list[dict]` com dicts nas chaves do model `Job` (exceto `source`/`found_at`). `BaseJobScraper.sync()` centraliza deduplicação (por `external_id` + `source`, também garantida pela `UniqueConstraint uq_job_source`) e persistência. Todos compartilham o `transport` de `scrapers/__init__.py`: httpx com retry (`httpx-retries`) + cache HTTP em SQLite (`hishel`).
    - Gupy: paginação por `offset`, ordenado por data desc; `level` é inferido do título via `utils.get_level_seniority`; descrição HTML limpa em `_clean_description`.
    - LinkedIn: parse com BeautifulSoup; `external_id` é um hash MD5 do título (não há ID real); `level`/`workplace_type` vêm dos filtros usados na busca; status 999 → retry com sleep.
-4. **Notificações** (`notifiers.py` + `wrappers/`): busca vagas com `telegram_notified == False` / `discord_notified == False`, envia e marca a flag como `True` vaga a vaga. O roteamento para tópico/canal é feito pela `keyword` usando os conjuntos em `keywords.py` (`PYTHON_KEYWORDS`, `JAVA_KEYWORDS`, ...) mapeados para IDs em `core/settings.py`. Telegram usa rate limit de 20 msg/min (`pyrate-limiter`) e corta a descrição em 4096 caracteres; Discord usa embeds (descrição até 1024).
-5. **API** (`api/routes/job.py`, prefixo `/jobs`): `GET /jobs` (filtros `source`, `keyword`, `location`, `workplace_type`, `for_pcd`, `level`, `limit<=200`, `offset`; ordenado por `found_at` desc), `POST /jobs/sync/{source}` (sync em `BackgroundTasks`, retorna 202), `GET /jobs/sources` (contagem por fonte). `GET /health` fica em `main.py`. Swagger em `/`.
+4. **API** (`api/routes/job.py`, prefixo `/jobs`): `GET /jobs` (filtros `source`, `keyword`, `company`, `location`, `workplace_type`, `for_pcd`, `level`, `limit<=200`, `offset`; ordenado por `found_at` desc), `POST /jobs/sync/{source}` (sync em `BackgroundTasks`, retorna 202), `GET /jobs/sources` (contagem por fonte). `GET /health` fica em `main.py`. Swagger em `/`.
 
 Outros pontos:
 
 - `models.py`: único model `Job`, usando `registry().mapped_as_dataclass` (campos com `init=False` não entram no construtor). Sessão injetada via `Session = Annotated[AsyncSession, Depends(get_session)]` em `utils.py`.
-- `enum.py`: `JobSource`, `JobLevel`, `WorkplaceType`, `Keyword`. O filtro `keyword` da API só aceita valores do enum `Keyword` e busca **apenas no título** (`ilike`).
+- `enum.py`: `JobSource`, `JobLevel`, `WorkplaceType`, `Keyword`. O enum `Keyword` não é mais usado pela API: os filtros `keyword` e `company` são texto livre com `ilike` (título e empresa, respectivamente).
 - `keywords.KEYWORDS` é a lista de termos buscados automaticamente pelos scrapers.
 - Configuração via `pydantic-settings` (`core/settings.py`, lê `.env`, `get_settings()` com `lru_cache`).
 
@@ -63,7 +62,7 @@ Outros pontos:
 3. Registrar a função de sync e o job em `scheduler.py`.
 4. Adicionar ao dicionário `scrapers` em `trigger_sync` (`api/routes/job.py`).
 
-**Adicionar uma nova keyword / categoria de notificação:** atualizar `KEYWORDS` e/ou os conjuntos em `keywords.py`, o enum `Keyword`, e — se for uma nova categoria — os campos `TELEGRAM_*_TOPIC_ID` / `DISCORD_*_CHANNEL_ID` em `settings.py`, `.env.example` e o `if/elif` de roteamento em **ambos** `wrappers/telegram.py` e `wrappers/discord_bot.py`.
+**Adicionar uma nova keyword de busca:** incluir o termo em `KEYWORDS` (`keywords.py`), que é a lista usada pelos scrapers no scheduler.
 
 **Alterar o schema do banco:** editar `models.py`, depois `uv run alembic revision --autogenerate -m "..."` (Postgres acessível via `DATABASE_URL`). Migrations ficam em `backend/app/migrations/versions/` e são aplicadas automaticamente no startup. Atualize também `schemas/job.py` se o campo for exposto.
 

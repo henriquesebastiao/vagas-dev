@@ -76,24 +76,6 @@ DATABASE_URL="postgresql+psycopg://postgres:password@vagas-db:5432/vagas-db"
 # App
 INTERVAL_SYNC="30" # Intervalo de sincronização em minutos
 
-# Telegram
-TELEGRAM_BOT_TOKEN="TELEGRAM-TOKEN"
-TELEGRAM_CHAT_ID="CHAT-ID"
-TELEGRAM_PYTHON_TOPIC_ID=""
-TELEGRAM_JAVA_TOPIC_ID=""
-TELEGRAM_GOLANG_TOPIC_ID=""
-TELEGRAM_FRONTEND_TOPIC_ID=""
-TELEGRAM_BACKEND_TOPIC_ID=""
-
-# Discord
-DISCORD_BOT_ID="BOT-ID"
-DISCORD_TOKEN="DISCORD-TOKEN"
-DISCORD_GUILD_ID="GUILD-ID"
-DISCORD_PYTHON_CHANNEL_ID=""
-DISCORD_JAVA_CHANNEL_ID=""
-DISCORD_GOLANG_CHANNEL_ID=""
-DISCORD_FRONTEND_CHANNEL_ID=""
-DISCORD_BACKEND_CHANNEL_ID=""
 
 # UI
 NEXT_PUBLIC_API_URL="https://vagas-api.henriquesebastiao.com"
@@ -117,35 +99,6 @@ Abaixo a descrição de cada variável:
 | Variável        | Descrição                                                      |
 |-----------------|----------------------------------------------------------------|
 | `INTERVAL_SYNC` | Intervalo em minutos entre cada ciclo de busca por novas vagas |
-
-### Telegram
-
-Para obter as variáveis do Telegram, crie um bot pelo [@BotFather](https://t.me/BotFather) e adicione-o ao seu grupo ou canal.
-
-| Variável                     | Descrição                                                                          |
-|------------------------------|------------------------------------------------------------------------------------|
-| `TELEGRAM_BOT_TOKEN`         | Token de autenticação do bot, fornecido pelo @BotFather ao criar o bot             |
-| `TELEGRAM_CHAT_ID`           | ID do grupo ou canal onde as vagas serão enviadas                                  |
-| `TELEGRAM_PYTHON_TOPIC_ID`   | ID do tópico destinado a vagas de Python — deixe vazio para usar o canal principal |
-| `TELEGRAM_JAVA_TOPIC_ID`     | ID do tópico destinado a vagas de Java                                             |
-| `TELEGRAM_GOLANG_TOPIC_ID`   | ID do tópico destinado a vagas de Golang                                           |
-| `TELEGRAM_FRONTEND_TOPIC_ID` | ID do tópico destinado a vagas de Frontend                                         |
-| `TELEGRAM_BACKEND_TOPIC_ID`  | ID do tópico destinado a vagas de Backend genérico                                 |
-
-### Discord
-
-Para obter as variáveis do Discord, acesse o [Discord Developer Portal](https://discord.com/developers/applications), crie uma aplicação e adicione um bot. Ative o **Modo Desenvolvedor** no Discord em Configurações → Avançado para conseguir copiar IDs de servidores e canais.
-
-| Variável                      | Descrição                                                                                           |
-|-------------------------------|-----------------------------------------------------------------------------------------------------|
-| `DISCORD_BOT_ID`              | ID da aplicação do bot, disponível no Developer Portal                                              |
-| `DISCORD_TOKEN`               | Token de autenticação do bot — nunca compartilhe este valor                                         |
-| `DISCORD_GUILD_ID`            | ID do servidor (guild) onde o bot está instalado — clique com botão direito no servidor para copiar |
-| `DISCORD_PYTHON_CHANNEL_ID`   | ID do canal destinado a vagas de Python                                                             |
-| `DISCORD_JAVA_CHANNEL_ID`     | ID do canal destinado a vagas de Java                                                               |
-| `DISCORD_GOLANG_CHANNEL_ID`   | ID do canal destinado a vagas de Golang                                                             |
-| `DISCORD_FRONTEND_CHANNEL_ID` | ID do canal destinado a vagas de Frontend                                                           |
-| `DISCORD_BACKEND_CHANNEL_ID`  | ID do canal destinado a vagas de Backend genérico                                                   |
 
 ### Interface web
 

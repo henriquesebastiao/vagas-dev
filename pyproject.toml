@@ -1,14 +1,13 @@
 [project]
 name = "backend.app"
 dynamic = ["version"]
-description = "API para busca de vagas de emprego para desenvolvedores e notificações de novas vagas."
+description = "API para busca de vagas de emprego para desenvolvedores."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "alembic>=1.18.4",
     "apscheduler>=3.11.2",
     "beautifulsoup4>=4.14.3",
-    "discord>=2.3.2",
     "fastapi[standard]>=0.135.1",
     "hishel[async]>=1.1.9",
     "httpx>=0.28.1",
@@ -17,9 +16,8 @@ dependencies = [
     "psycopg[binary]>=3.3.3",
     "pydantic>=2.12.5",
     "pydantic-settings>=2.13.1",
-    "pyrate-limiter>=4.0.2",
     "pytz>=2025.2",
-    "sqlalchemy>=2.0.46",
+    "sqlalchemy[asyncio]>=2.0.46",
 ]
 
 [dependency-groups]
@@ -70,8 +68,6 @@ quote-style = 'single'
 
 [tool.ruff.lint.per-file-ignores]
 '**/routes/*.py' = ['PLR0917', 'PLR0913', 'E501']
-'scheduler.py' = ['E712']
-'notifiers.py' = ['E712']
 'gupy.py' = ['E501']
 '**/tests/**/*.py' = ['E501']
 'main.py' = ['E501', 'PLR6301']
