@@ -43,18 +43,3 @@ jobs:
           platforms: linux/amd64,linux/arm64
           build-args: |
             DOCKER_METADATA_OUTPUT_JSON
-      - name: Build and push ui image
-        id: push-ui
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          file: frontend/Dockerfile
-          push: true
-          tags: |
-            henriquesebastiao/vagas-dev-ui:latest
-            henriquesebastiao/vagas-dev-ui:${{ steps.version.outputs.VERSION }}
-            ghcr.io/${{ github.repository }}/ui:latest
-            ghcr.io/${{ github.repository }}/ui:${{ steps.version.outputs.VERSION }}
-          platforms: linux/amd64,linux/arm64
-          build-args: |-
-            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}

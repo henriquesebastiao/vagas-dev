@@ -10,7 +10,6 @@ services:
             - .venv
         - path: ./requirements.txt
           action: rebuild
-  ui:
-    restart: no
+          
   database:
     restart: no
