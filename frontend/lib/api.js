@@ -1,4 +1,4 @@
-import { API_URL, PAGE_SIZE } from "@/lib/constants";
+import { PAGE_SIZE, getApiUrl } from "@/lib/constants";
 
 /**
  * Busca vagas com filtros opcionais.
@@ -23,14 +23,14 @@ export async function fetchJobs(filters = {}, offset = 0) {
   params.set("limit", PAGE_SIZE);
   params.set("offset", offset);
 
-  const res = await fetch(`${API_URL}/jobs?${params}`);
+  const res = await fetch(`${getApiUrl()}/jobs?${params}`);
   if (!res.ok) throw new Error("Erro ao buscar vagas");
   return res.json();
 }
 
 /** Busca as fontes disponíveis e a contagem de vagas de cada uma. */
 export async function fetchSources() {
-  const res = await fetch(`${API_URL}/jobs/sources`);
+  const res = await fetch(`${getApiUrl()}/jobs/sources`);
   if (!res.ok) throw new Error("Erro ao buscar fontes");
   return res.json();
 }
@@ -40,7 +40,7 @@ export async function fetchSources() {
  * A API roda o sync em background e responde imediatamente.
  */
 export async function triggerSync(source = "gupy") {
-  const res = await fetch(`${API_URL}/jobs/sync/${source}`, {
+  const res = await fetch(`${getApiUrl()}/jobs/sync/${source}`, {
     method: "POST",
   });
   if (!res.ok) throw new Error("Erro ao disparar sync");

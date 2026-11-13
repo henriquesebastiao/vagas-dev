@@ -1,6 +1,5 @@
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import {
-  API_URL,
   LEVEL_LABELS,
   SOURCE_LABELS,
   WORKPLACE_LABELS,
@@ -8,15 +7,16 @@ import {
   formatNumber,
   hostOf,
 } from "@/lib/constants";
+import { useApiUrl } from "@/lib/useApiUrl";
 
 function Intro({ sources }) {
+  const apiUrl = useApiUrl();
   return (
     <div className="detail intro">
       <h2>Selecione uma vaga para ler os detalhes</h2>
       <p>
-        O Vagas Dev consulta a Gupy e o LinkedIn periodicamente e reúne as
-        vagas novas nesta lista. As encontradas mais recentemente aparecem
-        primeiro.
+        O Vagas Dev consulta a Gupy e o LinkedIn periodicamente e reúne as vagas
+        novas nesta lista. As encontradas mais recentemente aparecem primeiro.
       </p>
 
       {sources.length > 0 && (
@@ -54,7 +54,7 @@ function Intro({ sources }) {
           </a>
         </li>
         <li>
-          <a href={`${API_URL}/`}>
+          <a href={`${apiUrl}/`}>
             Referência da API <ArrowUpRight size={14} aria-hidden="true" />
           </a>
         </li>

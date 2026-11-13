@@ -1,6 +1,8 @@
-import { API_URL, SOURCE_LABELS, formatNumber } from "@/lib/constants";
+import { SOURCE_LABELS, formatNumber } from "@/lib/constants";
+import { useApiUrl } from "@/lib/useApiUrl";
 
 export default function Header({ sources }) {
+  const apiUrl = useApiUrl();
   const total = sources.reduce((acc, s) => acc + s.count, 0);
 
   return (
@@ -28,7 +30,7 @@ export default function Header({ sources }) {
       <nav className="topbar__nav" aria-label="Links do projeto">
         <a href="https://github.com/henriquesebastiao/vagas-dev">GitHub</a>
         <a href="https://henriquesebastiao.github.io/vagas-dev">Documentação</a>
-        <a href={`${API_URL}/`}>API</a>
+        <a href={`${apiUrl}/`}>API</a>
       </nav>
     </header>
   );

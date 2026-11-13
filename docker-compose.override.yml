@@ -1,8 +1,6 @@
 services:
   app:
     restart: no
-    ports:
-      - "8000:8000"
     develop:
       watch:
         - path: ./backend
@@ -12,13 +10,7 @@ services:
             - .venv
         - path: ./requirements.txt
           action: rebuild
-  # ui:
-  #   restart: no
-  #   ports:
-  #     - "3000:3000"
-  database:
+  ui:
     restart: no
-    ports:
-      - "5432:5432"
-  web:
+  database:
     restart: no

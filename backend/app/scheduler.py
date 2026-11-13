@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from loguru import logger
@@ -43,6 +45,8 @@ def setup_scheduler():
         id='gupy_sync',
         name='Gupy Job Sync',
         replace_existing=True,
+        # Primeira execução logo na inicialização, sem esperar o intervalo
+        next_run_time=datetime.now(),
         max_instances=1,  # Evita execuções sobrepostas
         misfire_grace_time=60,  # Tolera até 60s de atraso
     )
@@ -53,6 +57,7 @@ def setup_scheduler():
         id='linkedin_sync',
         name='Linkedin Job Sync',
         replace_existing=True,
+        next_run_time=datetime.now(),
         max_instances=1,
         misfire_grace_time=60,
     )

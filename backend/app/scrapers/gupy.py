@@ -4,7 +4,7 @@ import re
 import httpx
 from loguru import logger
 
-from app.scrapers import transport
+from app.scrapers import build_transport
 from app.scrapers.base import BaseJobScraper
 from app.utils import get_level_seniority
 
@@ -39,7 +39,7 @@ class GupyScraper(BaseJobScraper):
 
         async with httpx.AsyncClient(
             base_url=self.BASE_URL,
-            transport=transport,
+            transport=build_transport(),
             timeout=10,
         ) as client:
             for keyword in self.keywords:

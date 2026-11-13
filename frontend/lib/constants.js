@@ -21,8 +21,19 @@ export const SOURCE_LABELS = {
 
 export const PAGE_SIZE = 50;
 
-export const API_URL =
+const BUILD_API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+/**
+ * URL da API. Prioriza o valor de execução definido em /config.js (gerado
+ * pelo container Docker) e cai para o valor embutido no build.
+ */
+export function getApiUrl() {
+  if (typeof window !== "undefined" && window.__VAGAS_CONFIG__?.apiUrl) {
+    return window.__VAGAS_CONFIG__.apiUrl;
+  }
+  return BUILD_API_URL;
+}
 
 /** Transforma uma data ISO em tempo relativo curto ("há 3 h"). */
 export function timeAgo(dateStr) {

@@ -75,6 +75,7 @@ async def trigger_sync(
     source: JobSource, background_tasks: BackgroundTasks, session: Session
 ):
     """Dispara uma sincronização manual via endpoint."""
+    source = source.value
     logger.info(f'Iniciando sync manual para fonte: {source}')
     scrapers = {'gupy': gupy.GupyScraper, 'linkedin': linkedin.LinkedInScraper}
 

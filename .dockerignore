@@ -28,4 +28,7 @@ zensical.toml
 .cache/
 backend/tests/
 site/
-nginx.conf
+node_modules
+frontend/.next/
+frontend/out/
+logs/

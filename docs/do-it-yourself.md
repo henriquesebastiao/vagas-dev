@@ -27,22 +27,23 @@ services:
 
   ui:
     container_name: ui
-    image: hcr.io/henriquesebastiao/vagas-dev/ui:latest
+    image: ghcr.io/henriquesebastiao/vagas-dev/ui:latest
     restart: always
     depends_on:
-      - app
+      - api
     environment:
-      - NEXT_PUBLIC_API_URL=http://api:8000
+      # URL da API como o navegador acessa (não use o nome do container)
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
     ports:
       - "3000:3000"
 
   database:
     container_name: database
-    image: postgres:18.3-alpine
-    ports:
-      - "8016:5432"
+    image: postgres:18.4-alpine
+    # Sem `ports`: o banco só precisa ser acessível pela API, na rede interna.
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      # A partir do Postgres 18 o volume é montado em /var/lib/postgresql
+      - pgdata:/var/lib/postgresql
     env_file:
       - .env
     restart: always
@@ -59,6 +60,8 @@ volumes:
 
 Este arquivo `docker-compose.yml` quando executado irá criar três containers, sendo eles a API REST, a interface web e o banco de dados, respectivamente.
 
+A API fica em `http://localhost:8000` e a interface em `http://localhost:3000`. Para publicar com domínio e HTTPS, aponte o seu proxy reverso (Traefik, Caddy, Nginx Proxy Manager etc.) para as portas `8000` (API) e `3000` (interface) e defina `NEXT_PUBLIC_API_URL` com o endereço público da API. Os dois containers têm healthcheck (`/health` na API).
+
 ## Varáveis de ambiente
 
 Crie um arquivo `.env` no qual vão estar todas as variáveis de ambiente necessárias para o funcionamento do sistema.
@@ -68,17 +71,18 @@ Crie o arquivo com o seguinte conteúdo:
 POSTGRES_DB="vagas-db"
 POSTGRES_USER="postgres"
 POSTGRES_PASSWORD="password"
-POSTGRES_HOST="vagas-db"
+POSTGRES_HOST="database"
 POSTGRES_PORT="5432"
 
-DATABASE_URL="postgresql+psycopg://postgres:password@vagas-db:5432/vagas-db"
+# O host é o nome do serviço do banco no docker-compose.yml
+DATABASE_URL="postgresql+psycopg://postgres:password@database:5432/vagas-db"
 
 # App
 INTERVAL_SYNC="30" # Intervalo de sincronização em minutos
 
 
 # UI
-NEXT_PUBLIC_API_URL="https://vagas-api.henriquesebastiao.com"
+NEXT_PUBLIC_API_URL="http://localhost:8000"
 ```
 
 Abaixo a descrição de cada variável:
@@ -98,13 +102,14 @@ Abaixo a descrição de cada variável:
 
 | Variável        | Descrição                                                      |
 |-----------------|----------------------------------------------------------------|
-| `INTERVAL_SYNC` | Intervalo em minutos entre cada ciclo de busca por novas vagas |
+| `INTERVAL_SYNC` | Intervalo em minutos entre cada ciclo de busca por novas vagas. A primeira busca acontece assim que a API inicia |
+| `WORKERS`       | Opcional. Número de processos da API (padrão `1`). Mantenha `1`: cada processo roda o seu próprio agendador, e mais de um duplicaria as buscas |
 
 ### Interface web
 
 | Variável              | Descrição                                                                                                                          |
 |-----------------------|------------------------------------------------------------------------------------------------------------------------------------|
-| `NEXT_PUBLIC_API_URL` | URL pública da API consumida pela interface — em produção aponte para o domínio da sua API; localmente use `http://localhost:8000` |
+| `NEXT_PUBLIC_API_URL` | URL da API como o navegador do usuário a acessa — em produção aponte para o domínio da sua API; localmente use `http://localhost:8000`. Não use o nome do container (ex.: `http://api:8000`), pois quem faz as requisições é o navegador. O container da interface lê esta variável ao iniciar, sem precisar de novo build |
 
 ## Executando
 

@@ -58,7 +58,7 @@ async def lifespan(app: FastAPI):
     logger.add(
         sys.stdout,
         level=log_level,
-        colorize=True,
+        colorize=None,  # cores só quando houver terminal
     )
 
     # Opcional: salvar em arquivo com rotação

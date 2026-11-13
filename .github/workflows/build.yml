@@ -48,7 +48,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: backend/Dockerfile
+          file: frontend/Dockerfile
           push: true
           tags: |
             henriquesebastiao/vagas-dev-ui:latest
@@ -57,4 +57,4 @@ jobs:
             ghcr.io/${{ github.repository }}/ui:${{ steps.version.outputs.VERSION }}
           platforms: linux/amd64,linux/arm64
           build-args: |-
-            DOCKER_METADATA_OUTPUT_JSON
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}

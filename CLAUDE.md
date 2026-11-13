@@ -32,7 +32,7 @@ uv run pytest backend/tests/api/routes/test_job.py::test_list_jobs -s -v
 ```
 
 - **Os testes precisam de Docker**: `backend/tests/conftest.py` sobe um Postgres real via `testcontainers` (`postgres:18-alpine`) com escopo de sessão; as tabelas são criadas/dropadas por teste via `table_registry.metadata`. Requisições HTTP externas são mockadas com `respx` (fixture `respx_mock`). `asyncio_mode = auto`, então testes `async def` não precisam de decorator.
-- Stack completa local: `docker compose up` (app + Postgres + nginx na porta 80; o override expõe 8000 e faz watch de `./backend`). Copie `.env.example` para `.env`.
+- Stack completa local: `docker compose up --build` (API em `:8000`, interface em `:3000`, Postgres em `:5432`; o override só faz watch de `./backend`). Copie `.env.example` para `.env`. Não há proxy reverso no projeto: em produção as imagens publicadas (`ghcr.io/henriquesebastiao/vagas-dev/{api,ui}`) são usadas no compose do servidor, atrás do proxy do próprio usuário.
 
 ## Arquitetura
 
@@ -40,11 +40,11 @@ Tudo do backend fica em `backend/app/`. O app é executado com `--app-dir backen
 
 Fluxo principal:
 
-1. **Startup** (`main.py`, `lifespan`): configura loguru (intercepta todos os loggers stdlib; grava também em `logs/app.log`), **executa `alembic upgrade head` como subprocesso** e chama `setup_scheduler()`.
-2. **Scheduler** (`scheduler.py`, APScheduler): dois jobs com o mesmo intervalo `INTERVAL_SYNC` (minutos): sync Gupy e sync LinkedIn.
-3. **Scrapers** (`scrapers/`): cada fonte herda de `BaseJobScraper` (`scrapers/base.py`) e implementa apenas `fetch_jobs() -> list[dict]` com dicts nas chaves do model `Job` (exceto `source`/`found_at`). `BaseJobScraper.sync()` centraliza deduplicação (por `external_id` + `source`, também garantida pela `UniqueConstraint uq_job_source`) e persistência. Todos compartilham o `transport` de `scrapers/__init__.py`: httpx com retry (`httpx-retries`) + cache HTTP em SQLite (`hishel`).
-   - Gupy: paginação por `offset`, ordenado por data desc; `level` é inferido do título via `utils.get_level_seniority`; descrição HTML limpa em `_clean_description`.
-   - LinkedIn: parse com BeautifulSoup; `external_id` é um hash MD5 do título (não há ID real); `level`/`workplace_type` vêm dos filtros usados na busca; status 999 → retry com sleep.
+1. **Startup**: no container, `backend/entrypoint.sh` roda `alembic upgrade head` e inicia o uvicorn com `WORKERS` (padrão **1**: o scheduler roda dentro do processo da API, então mais workers duplicam as coletas). Depois, `main.py` (`lifespan`): configura loguru (intercepta todos os loggers stdlib; grava também em `logs/app.log`), **executa `alembic upgrade head` como subprocesso** e chama `setup_scheduler()`.
+2. **Scheduler** (`scheduler.py`, APScheduler): dois jobs com o mesmo intervalo `INTERVAL_SYNC` (minutos): sync Gupy e sync LinkedIn. Ambos rodam também logo na inicialização (`next_run_time`).
+3. **Scrapers** (`scrapers/`): cada fonte herda de `BaseJobScraper` (`scrapers/base.py`) e implementa apenas `fetch_jobs() -> list[dict]` com dicts nas chaves do model `Job` (exceto `source`/`found_at`). `BaseJobScraper.sync()` centraliza deduplicação (por `external_id` + `source`, também garantida pela `UniqueConstraint uq_job_source`) e persistência. Todos usam `build_transport()` de `scrapers/__init__.py` (httpx com retry via `httpx-retries` + cache HTTP em SQLite via `hishel`). Crie um transport novo por `AsyncClient`: o client fecha o transport ao sair do `async with`, e reutilizá-lo quebra as próximas coletas.
+   - Gupy: paginação por `offset`, ordenado por data desc; `level` é inferido do título via `utils.get_level_seniority`; descrição HTML limpa em `_clean_description`. **Atenção:** desde nov/2026 o endpoint `employability-portal.gupy.io/api/v1/jobs` responde 404; a coleta da Gupy está quebrada até ser migrada para a nova API.
+   - LinkedIn: parse com BeautifulSoup; `external_id` é um hash MD5 do título (não há ID real); `workplace_type` vem do filtro da busca e `level` é deduzido do título (a busca pública ignora o filtro de nível `f_E`); status 999 → retry com sleep.
 4. **API** (`api/routes/job.py`, prefixo `/jobs`): `GET /jobs` (filtros `source`, `keyword`, `company`, `location`, `workplace_type`, `for_pcd`, `level`, `limit<=200`, `offset`; ordenado por `found_at` desc), `POST /jobs/sync/{source}` (sync em `BackgroundTasks`, retorna 202), `GET /jobs/sources` (contagem por fonte). `GET /health` fica em `main.py`. Swagger em `/`.
 
 Outros pontos:
@@ -76,7 +76,11 @@ Outros pontos:
 
 ## Frontend
 
-`frontend/` é Next.js 16 + React 19 + Tailwind 4, em JavaScript (sem TypeScript), com `output: "export"` (site estático). `app/page.js` é um client component que concentra o estado; `lib/api.js` encapsula as chamadas à API usando `NEXT_PUBLIC_API_URL` (padrão `http://localhost:8000`); `lib/constants.js` tem labels/cores de nível e modalidade. Estilos são majoritariamente inline. Deploy no Cloudflare Pages via `.github/workflows/deploy.yml` após a CI passar na `main`. O serviço `ui` no `docker-compose.yml` está comentado e `frontend/Dockerfile` espera build `standalone` (incompatível com o `output: "export"` atual).
+`frontend/` é Next.js 16 + React 19, em JavaScript (sem TypeScript), com `output: "export"` (site estático em `frontend/out`). `app/page.js` é um client component que concentra o estado; estilos ficam em `app/globals.css` (tokens CSS, claro/escuro via `prefers-color-scheme`); `lib/api.js` encapsula as chamadas à API; `lib/constants.js` tem rótulos e formatadores.
+
+URL da API: `getApiUrl()` (`lib/constants.js`) usa `window.__VAGAS_CONFIG__.apiUrl`, definido em `/config.js`, e cai para `NEXT_PUBLIC_API_URL` do build. `public/config.js` é vazio; na imagem Docker, `frontend/docker-entrypoint.sh` o regenera a partir de `NEXT_PUBLIC_API_URL` ao iniciar o container, então a mesma imagem serve para qualquer API. Em componentes renderizados use o hook `useApiUrl()` (evita erro de hidratação). A URL é sempre a que o **navegador** acessa, nunca o nome do container.
+
+Deploy: Cloudflare Pages via `.github/workflows/deploy.yml` (após a CI na `main`) e imagem Docker (`frontend/Dockerfile`: build Node + nginx servindo `out/` na porta 3000, config em `frontend/nginx.conf`), publicada por `.github/workflows/build.yml` em cada release.
 
 ## Documentação
 
