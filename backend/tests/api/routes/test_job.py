@@ -1,3 +1,6 @@
+from unittest.mock import AsyncMock
+
+from app.scrapers.gupy import GupyScraper
 from fastapi import status
 
 
@@ -51,10 +54,15 @@ async def test_list_sources(client):
     assert isinstance(response.json(), list)
 
 
-async def test_trigger_sync(client):
+async def test_trigger_sync(client, monkeypatch):
+    # Evita a coleta real (rede) na tarefa em background.
+    sync = AsyncMock()
+    monkeypatch.setattr(GupyScraper, 'sync', sync)
+
     response = await client.post('/jobs/sync/gupy')
     assert response.status_code == status.HTTP_202_ACCEPTED
     assert 'iniciado em background' in response.json().get('message', '')
+    sync.assert_awaited_once()
 
 
 async def test_trigger_sync_not_found(client):
