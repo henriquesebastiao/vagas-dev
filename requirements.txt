@@ -52,7 +52,7 @@ fastapi==0.162.5
     # via backend-app
 fastapi-cli==0.0.32
     # via fastapi
-fastapi-cloud-cli==0.24.0
+fastapi-cloud-cli==0.27.1
     # via fastapi-cli
 fastar==0.12.0
     # via
